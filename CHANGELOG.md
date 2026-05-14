@@ -5,6 +5,11 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [SemVer](https://semver.org/lang/es/).
 
+## [0.1.3] - 2026-05-14
+
+### Fixed
+- Se eliminó la carpeta `app/` incompleta para evitar conflicto interno de enrutado y corregir el `Unhandled Rejection: The "to" argument must be of type string. Received undefined` al iniciar con `next dev`.
+
 ## [0.1.2] - 2026-05-14
 
 ### Fixed
