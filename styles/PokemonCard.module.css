@@ -1,0 +1,38 @@
+.card {
+  display: block;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+  text-decoration: none;
+  color: #111827;
+  padding: 1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.image {
+  width: 100%;
+  max-width: 180px;
+  display: block;
+  margin: 0 auto;
+}
+
+.content {
+  margin-top: 0.75rem;
+  text-align: center;
+}
+
+.id {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.name {
+  margin: 0.25rem 0 0;
+  text-transform: capitalize;
+  font-size: 1.1rem;
+}
