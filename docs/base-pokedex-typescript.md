@@ -16,3 +16,7 @@ Se implementó una base funcional para una Pokédex en Next.js con TypeScript us
 ## Versión
 
 - v0.1.0
+
+## Ajuste v0.1.1
+
+- Se eliminó `app/page.tsx` para resolver el conflicto de enrutado con `pages/index.tsx` en la ruta raíz `/`.

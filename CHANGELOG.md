@@ -5,6 +5,11 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
+## [0.1.1] - 2026-05-14
+
+### Fixed
+- Eliminada la ruta conflictiva `app/page.tsx` para evitar la colisión entre App Router y Pages Router en `/`.
+
 ## [0.1.0] - 2026-05-14
 
 ### Added
