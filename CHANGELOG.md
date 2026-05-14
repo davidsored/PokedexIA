@@ -5,6 +5,11 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [SemVer](https://semver.org/lang/es/).
 
+## [0.1.2] - 2026-05-14
+
+### Fixed
+- Se eliminó `app/page.tsx` para resolver el conflicto de rutas `/` entre App Router y Pages Router en Next.js.
+
 ## [0.1.1] - 2026-05-14
 
 ### Fixed

@@ -49,3 +49,6 @@ Queda disponible una Pokédex core funcional, estática y extensible para siguie
 ## Patch v0.1.1
 - Se reemplazaron imágenes HTML por `next/image` en listado y detalle.
 - Se configuró `next.config.ts` para permitir el dominio `raw.githubusercontent.com` en imágenes remotas.
+
+## Patch v0.1.2
+- Se removió `app/page.tsx` para evitar colisión de la ruta raíz (`/`) con `pages/index.js`.
