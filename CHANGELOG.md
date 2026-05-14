@@ -3,19 +3,25 @@
 Todos los cambios notables de este proyecto serán documentados en este archivo.
 
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
-y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
+y este proyecto adhiere a [SemVer](https://semver.org/lang/es/).
+
+## [0.1.2] - 2026-05-14
+
+### Fixed
+- Se eliminó `app/page.tsx` para resolver el conflicto de rutas `/` entre App Router y Pages Router en Next.js.
 
 ## [0.1.1] - 2026-05-14
 
 ### Fixed
-- Eliminada la ruta conflictiva `app/page.tsx` para evitar la colisión entre App Router y Pages Router en `/`.
+- Migración de etiquetas `<img>` a `next/image` en tarjeta y detalle para corregir advertencias de optimización de Next.js.
+- Configuración de `images.remotePatterns` en `next.config.ts` para permitir imágenes desde `raw.githubusercontent.com` y evitar el error de hostname no configurado.
 
 ## [0.1.0] - 2026-05-14
 
 ### Added
-- Configuración base de Axios en `lib/axios.ts` apuntando a PokeAPI.
-- Tipos TypeScript para datos de Pokémon (`types`, `stats`, `sprites`).
-- Componente `PokemonCard` con props tipadas y estilos con CSS Modules.
-- Página principal con listado de los primeros 151 Pokémon usando `getStaticProps`.
-- Página dinámica de detalle de Pokémon con `getStaticPaths` y `getStaticProps`.
-- Documentación del cambio en `docs/base-pokedex-typescript.md`.
+- Configuración centralizada de Axios para consumir la PokeAPI en `lib/axios.js`.
+- Componente `PokemonCard` para mostrar nombre, ID e imagen oficial.
+- Página principal con `getStaticProps` para listar los primeros 151 Pokémon.
+- Ruta dinámica `pages/pokemon/[name].js` con `getStaticPaths` y `getStaticProps` para detalle de Pokémon.
+- Estilos modulares para listado y vista detalle.
+- Documentación de la feature en `docs/feature-pokedex-core.md`.

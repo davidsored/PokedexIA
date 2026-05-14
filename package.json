@@ -1,6 +1,6 @@
 {
   "name": "my-app",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -12,7 +12,7 @@
     "next": "16.2.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "axios": "^1.11.0"
+    "axios": "^1.13.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
