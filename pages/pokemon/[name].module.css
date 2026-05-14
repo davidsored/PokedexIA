@@ -1,0 +1,18 @@
+.container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.name {
+  text-transform: capitalize;
+  margin-bottom: 0.5rem;
+}
+
+.meta {
+  color: #4b5563;
+}
+
+.list {
+  padding-left: 1.25rem;
+}
