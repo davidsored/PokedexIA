@@ -1,0 +1,1223 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "PokéAPI v2 (Unofficial OpenAPI Spec)",
+    "version": "0.1.1",
+    "description": "Unofficial, hand-crafted OpenAPI 3.0 spec for https://pokeapi.co API v2.\nBased on the public docs. Only GET operations (consumption-only).\nPagination via `limit` and `offset`.\n"
+  },
+  "servers": [
+    {
+      "url": "https://pokeapi.co/api/v2"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Pokémon"
+    },
+    {
+      "name": "Abilities"
+    },
+    {
+      "name": "Types"
+    },
+    {
+      "name": "Moves"
+    },
+    {
+      "name": "Items"
+    },
+    {
+      "name": "Berries"
+    },
+    {
+      "name": "Evolution"
+    },
+    {
+      "name": "Locations"
+    },
+    {
+      "name": "Species"
+    },
+    {
+      "name": "Machines"
+    },
+    {
+      "name": "Contests"
+    },
+    {
+      "name": "Utility"
+    }
+  ],
+  "paths": {
+    "/pokemon/": {
+      "get": {
+        "tags": [
+          "Pokémon"
+        ],
+        "summary": "List Pokémon",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of Pokémon",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NamedAPIResourceList"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/pokemon/{idOrName}/": {
+      "get": {
+        "tags": [
+          "Pokémon"
+        ],
+        "summary": "Get a Pokémon by id or name",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/idOrName"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pokémon data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pokemon"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/ability/": {
+      "get": {
+        "tags": [
+          "Abilities"
+        ],
+        "summary": "List abilities",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NamedAPIResourceList"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/ability/{idOrName}/": {
+      "get": {
+        "tags": [
+          "Abilities"
+        ],
+        "summary": "Get an ability",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/idOrName"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ability"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/type/": {
+      "get": {
+        "tags": [
+          "Types"
+        ],
+        "summary": "List types",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NamedAPIResourceList"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/type/{idOrName}/": {
+      "get": {
+        "tags": [
+          "Types"
+        ],
+        "summary": "Get a type",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/idOrName"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Type"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/move/": {
+      "get": {
+        "tags": [
+          "Moves"
+        ],
+        "summary": "List moves",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NamedAPIResourceList"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/move/{idOrName}/": {
+      "get": {
+        "tags": [
+          "Moves"
+        ],
+        "summary": "Get a move",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/idOrName"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Move"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/item/": {
+      "get": {
+        "tags": [
+          "Items"
+        ],
+        "summary": "List items",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NamedAPIResourceList"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/item/{idOrName}/": {
+      "get": {
+        "tags": [
+          "Items"
+        ],
+        "summary": "Get an item",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/idOrName"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Item"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/berry/": {
+      "get": {
+        "tags": [
+          "Berries"
+        ],
+        "summary": "List berries",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NamedAPIResourceList"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/berry/{idOrName}/": {
+      "get": {
+        "tags": [
+          "Berries"
+        ],
+        "summary": "Get a berry",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/idOrName"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Berry"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/evolution-chain/": {
+      "get": {
+        "tags": [
+          "Evolution"
+        ],
+        "summary": "List evolution chains",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResourceList"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/evolution-chain/{id}/": {
+      "get": {
+        "tags": [
+          "Evolution"
+        ],
+        "summary": "Get an evolution chain",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvolutionChain"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/location/": {
+      "get": {
+        "tags": [
+          "Locations"
+        ],
+        "summary": "List locations",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NamedAPIResourceList"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/location/{idOrName}/": {
+      "get": {
+        "tags": [
+          "Locations"
+        ],
+        "summary": "Get a location",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/idOrName"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Location"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/pokemon-species/": {
+      "get": {
+        "tags": [
+          "Species"
+        ],
+        "summary": "List Pokémon species",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NamedAPIResourceList"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/pokemon-species/{idOrName}/": {
+      "get": {
+        "tags": [
+          "Species"
+        ],
+        "summary": "Get a Pokémon species",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/idOrName"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PokemonSpecies"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/machine/": {
+      "get": {
+        "tags": [
+          "Machines"
+        ],
+        "summary": "List machines (TMs/HMs/TRs)",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APIResourceList"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/machine/{id}/": {
+      "get": {
+        "tags": [
+          "Machines"
+        ],
+        "summary": "Get a machine",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Machine"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/contest-type/": {
+      "get": {
+        "tags": [
+          "Contests"
+        ],
+        "summary": "List contest types",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NamedAPIResourceList"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/contest-type/{idOrName}/": {
+      "get": {
+        "tags": [
+          "Contests"
+        ],
+        "summary": "Get a contest type",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/idOrName"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContestType"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/language/": {
+      "get": {
+        "tags": [
+          "Utility"
+        ],
+        "summary": "List languages",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/limit"
+          },
+          {
+            "$ref": "#/components/parameters/offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NamedAPIResourceList"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/language/{idOrName}/": {
+      "get": {
+        "tags": [
+          "Utility"
+        ],
+        "summary": "Get a language",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/idOrName"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Language"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "limit": {
+        "name": "limit",
+        "in": "query",
+        "description": "Max number of resources to return (default 20)",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "in": "query",
+        "description": "Index of the first resource to return (for pagination)",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "idOrName": {
+        "name": "idOrName",
+        "in": "path",
+        "required": true,
+        "description": "Numeric id or string name of the resource",
+        "schema": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "string",
+              "minLength": 1
+            }
+          ]
+        }
+      }
+    },
+    "responses": {
+      "NotFound": {
+        "description": "Resource not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "NamedAPIResource": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "name",
+          "url"
+        ]
+      },
+      "APIResource": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "url"
+        ]
+      },
+      "NamedAPIResourceList": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer"
+          },
+          "next": {
+            "type": "string",
+            "nullable": true
+          },
+          "previous": {
+            "type": "string",
+            "nullable": true
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NamedAPIResource"
+            }
+          }
+        },
+        "required": [
+          "count",
+          "results"
+        ]
+      },
+      "APIResourceList": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer"
+          },
+          "next": {
+            "type": "string",
+            "nullable": true
+          },
+          "previous": {
+            "type": "string",
+            "nullable": true
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/APIResource"
+            }
+          }
+        },
+        "required": [
+          "count",
+          "results"
+        ]
+      },
+      "Pokemon": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "base_experience": {
+            "type": "integer",
+            "nullable": true
+          },
+          "height": {
+            "type": "integer",
+            "nullable": true
+          },
+          "is_default": {
+            "type": "boolean"
+          },
+          "order": {
+            "type": "integer",
+            "nullable": true
+          },
+          "weight": {
+            "type": "integer",
+            "nullable": true
+          },
+          "abilities": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "is_hidden": {
+                  "type": "boolean"
+                },
+                "slot": {
+                  "type": "integer"
+                },
+                "ability": {
+                  "$ref": "#/components/schemas/NamedAPIResource"
+                }
+              }
+            }
+          },
+          "forms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NamedAPIResource"
+            }
+          },
+          "species": {
+            "$ref": "#/components/schemas/NamedAPIResource"
+          },
+          "sprites": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "stats": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "base_stat": {
+                  "type": "integer"
+                },
+                "effort": {
+                  "type": "integer"
+                },
+                "stat": {
+                  "$ref": "#/components/schemas/NamedAPIResource"
+                }
+              }
+            }
+          },
+          "types": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "slot": {
+                  "type": "integer"
+                },
+                "type": {
+                  "$ref": "#/components/schemas/NamedAPIResource"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Ability": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "effect_entries": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "effect": {
+                  "type": "string"
+                },
+                "short_effect": {
+                  "type": "string"
+                },
+                "language": {
+                  "$ref": "#/components/schemas/NamedAPIResource"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Type": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "damage_relations": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "pokemon": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "slot": {
+                  "type": "integer"
+                },
+                "pokemon": {
+                  "$ref": "#/components/schemas/NamedAPIResource"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Move": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "accuracy": {
+            "type": "integer",
+            "nullable": true
+          },
+          "pp": {
+            "type": "integer",
+            "nullable": true
+          },
+          "power": {
+            "type": "integer",
+            "nullable": true
+          },
+          "type": {
+            "$ref": "#/components/schemas/NamedAPIResource"
+          },
+          "damage_class": {
+            "$ref": "#/components/schemas/NamedAPIResource"
+          }
+        }
+      },
+      "Item": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "cost": {
+            "type": "integer",
+            "nullable": true
+          },
+          "attributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/NamedAPIResource"
+            }
+          },
+          "category": {
+            "$ref": "#/components/schemas/NamedAPIResource"
+          }
+        }
+      },
+      "Berry": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "growth_time": {
+            "type": "integer",
+            "nullable": true
+          },
+          "max_harvest": {
+            "type": "integer",
+            "nullable": true
+          },
+          "firmness": {
+            "$ref": "#/components/schemas/NamedAPIResource"
+          },
+          "item": {
+            "$ref": "#/components/schemas/NamedAPIResource"
+          }
+        }
+      },
+      "EvolutionChain": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "chain": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "Machine": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "item": {
+            "$ref": "#/components/schemas/NamedAPIResource"
+          },
+          "move": {
+            "$ref": "#/components/schemas/NamedAPIResource"
+          },
+          "version_group": {
+            "$ref": "#/components/schemas/NamedAPIResource"
+          }
+        }
+      },
+      "ContestType": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "berry_flavor": {
+            "$ref": "#/components/schemas/NamedAPIResource"
+          }
+        }
+      },
+      "Location": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "region": {
+            "$ref": "#/components/schemas/NamedAPIResource"
+          }
+        }
+      },
+      "PokemonSpecies": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "color": {
+            "$ref": "#/components/schemas/NamedAPIResource"
+          },
+          "shape": {
+            "$ref": "#/components/schemas/NamedAPIResource"
+          },
+          "evolution_chain": {
+            "$ref": "#/components/schemas/APIResource"
+          }
+        }
+      },
+      "Language": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "iso639": {
+            "type": "string",
+            "nullable": true
+          },
+          "iso3166": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      }
+    }
+  }
+}
