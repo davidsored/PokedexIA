@@ -5,6 +5,19 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [SemVer](https://semver.org/lang/es/).
 
+## [0.2.0] - 2026-05-15
+
+### Added
+- Selector de visualización en home para alternar entre **Modo Card** (rejilla) y **Modo Lista** (lista vertical).
+- Nuevo documento `docs/feature-home-theme-view-modes.md` con el detalle técnico de la mejora.
+
+### Changed
+- Rediseño de la página principal con una estética más alineada a la temática Pokémon (fondo, tipografía visual y controles).
+- Adaptación del componente `PokemonCard` para soportar visualización en formato lista horizontal.
+
+### Fixed
+- Mitigación de errores recurrentes `TimeoutError` y `upstream image response timed out` al desactivar la optimización proxy de `next/image` (`images.unoptimized = true`).
+
 ## [0.1.3] - 2026-05-14
 
 ### Fixed

@@ -1,16 +1,60 @@
 .container {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 2rem 1rem 3rem;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #e9f3ff 0%, #fff2cc 100%);
+}
+
+.header {
+  margin-bottom: 1.5rem;
 }
 
 .title {
-  font-size: 2rem;
-  margin-bottom: 1.5rem;
+  font-size: 2.2rem;
+  margin: 0;
+  color: #1d2a57;
+}
+
+.subtitle {
+  margin: 0.4rem 0 0;
+  color: #36457a;
+  font-weight: 500;
+}
+
+.controls {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.controlButton {
+  border: 2px solid #1d2a57;
+  background: white;
+  color: #1d2a57;
+  border-radius: 999px;
+  padding: 0.5rem 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.controlButton:hover {
+  background: #f2f6ff;
+}
+
+.active {
+  background: #ffcb05;
+  border-color: #b39500;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
   gap: 1rem;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }

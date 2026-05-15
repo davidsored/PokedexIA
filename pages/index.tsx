@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import type { GetStaticProps } from "next";
 import PokemonCard from "@/components/PokemonCard";
 import api from "@/lib/axios";
@@ -10,17 +11,53 @@ interface HomePokemon {
   image: string;
 }
 
+type ViewMode = "card" | "list";
+
 interface HomeProps {
   pokemons: HomePokemon[];
 }
 
 export default function Home({ pokemons }: HomeProps) {
+  const [viewMode, setViewMode] = useState<ViewMode>("card");
+
+  const containerClassName = useMemo(
+    () => (viewMode === "card" ? styles.grid : styles.list),
+    [viewMode]
+  );
+
   return (
     <main className={styles.container}>
-      <h1 className={styles.title}>Pokédex (Kanto 151)</h1>
-      <section className={styles.grid}>
+      <header className={styles.header}>
+        <h1 className={styles.title}>Pokédex Kanto</h1>
+        <p className={styles.subtitle}>Explora los 151 Pokémon originales</p>
+      </header>
+
+      <section className={styles.controls} aria-label="Cambiar visualización">
+        <button
+          type="button"
+          onClick={() => setViewMode("card")}
+          className={`${styles.controlButton} ${
+            viewMode === "card" ? styles.active : ""
+          }`}
+          aria-pressed={viewMode === "card"}
+        >
+          Modo Card
+        </button>
+        <button
+          type="button"
+          onClick={() => setViewMode("list")}
+          className={`${styles.controlButton} ${
+            viewMode === "list" ? styles.active : ""
+          }`}
+          aria-pressed={viewMode === "list"}
+        >
+          Modo Lista
+        </button>
+      </section>
+
+      <section className={containerClassName}>
         {pokemons.map((pokemon) => (
-          <PokemonCard key={pokemon.id} {...pokemon} />
+          <PokemonCard key={pokemon.id} {...pokemon} viewMode={viewMode} />
         ))}
       </section>
     </main>
