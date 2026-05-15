@@ -20,7 +20,7 @@ export default function PokemonDetailPage({ pokemon }: PokemonPageProps) {
   return (
     <main className={styles.container}>
       <Link href="/" className={styles.backLink}>
-        ← Volver a la Pokédex
+        Volver a la Pokedex
       </Link>
 
       <section className={styles.header}>
@@ -41,7 +41,7 @@ export default function PokemonDetailPage({ pokemon }: PokemonPageProps) {
       </section>
 
       <section>
-        <h2 className={styles.sectionTitle}>Estadísticas base</h2>
+        <h2 className={styles.sectionTitle}>Estadisticas base</h2>
         <ul className={styles.statsList}>
           {pokemon.stats.map((item) => {
             const percentage = Math.min((item.base_stat / MAX_BASE_STAT) * 100, 100);
@@ -51,11 +51,7 @@ export default function PokemonDetailPage({ pokemon }: PokemonPageProps) {
                 <span className={styles.statName}>{item.stat.name}</span>
                 <span className={styles.statValue}>{item.base_stat}</span>
                 <div className={styles.statBarTrack}>
-                  <div
-                    className={styles.statBarFill}
-                    style={{ width: `${percentage}%` }}
-                    aria-hidden="true"
-                  />
+                  <div className={styles.statBarFill} style={{ width: `${percentage}%` }} />
                 </div>
               </li>
             );
@@ -71,18 +67,14 @@ export const getStaticPaths: GetStaticPaths = async () => {
     params: { limit: 151, offset: 0 },
   });
 
-  const paths = data.results.map((pokemon) => ({
-    params: { name: pokemon.name },
-  }));
-
   return {
-    paths,
+    paths: data.results.map((pokemon) => ({ params: { name: pokemon.name } })),
     fallback: false,
   };
 };
 
 export const getStaticProps: GetStaticProps<PokemonPageProps> = async ({ params }) => {
-  const name = String(params?.name);
+  const name = String(params?.name ?? "");
   const { data } = await api.get<Pokemon>(`pokemon/${name}`);
 
   return {

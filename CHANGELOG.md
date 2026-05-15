@@ -5,6 +5,15 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [SemVer](https://semver.org/lang/es/).
 
+## [0.2.4] - 2026-05-15
+
+### Fixed
+- Ajustada la pagina `pages/pokemon/[name].tsx` para eliminar caracteres especiales conflictivos que podian provocar `Invalid or unexpected token` al abrir el detalle desde una tarjeta.
+- Se simplifico el render de la barra de estadisticas para evitar atributos innecesarios durante la hidratacion.
+
+### Added
+- Documentacion del fix en `docs/fix-invalid-token-pokemon-detail.md`.
+
 ## [0.2.3] - 2026-05-15
 
 ### Added
