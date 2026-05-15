@@ -46,3 +46,10 @@
   color: #56607d;
   font-weight: 700;
 }
+
+.cta {
+  margin-top: 0.4rem;
+  color: #1d4ed8;
+  font-size: 0.85rem;
+  font-weight: 600;
+}

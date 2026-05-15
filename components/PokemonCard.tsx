@@ -31,6 +31,7 @@ export default function PokemonCard({
       <div className={styles.content}>
         <h3 className={styles.title}>{name}</h3>
         <p className={styles.id}>#{id.toString().padStart(3, "0")}</p>
+        <span className={styles.cta}>Ver estadísticas</span>
       </div>
     </Link>
   );
