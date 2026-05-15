@@ -5,6 +5,15 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [SemVer](https://semver.org/lang/es/).
 
+## [0.2.1] - 2026-05-15
+
+### Fixed
+- Eliminados los archivos JavaScript duplicados de páginas (`pages/index.js` y `pages/pokemon/[name].js`) que provocaban `Duplicate page detected` en Next.js.
+- Eliminados duplicados JS restantes (`components/PokemonCard.js` y `lib/axios.js`) para mantener el proyecto en TypeScript de forma consistente.
+
+### Added
+- Documentación del ajuste en `docs/fix-remove-js-duplicates.md`.
+
 ## [0.2.0] - 2026-05-15
 
 ### Added
