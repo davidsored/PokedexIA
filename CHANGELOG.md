@@ -5,6 +5,37 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [SemVer](https://semver.org/lang/es/).
 
+## [0.2.5] - 2026-05-15
+
+### Fixed
+- Reescrita la pagina `pages/pokemon/[name].tsx` con estructura mas simple para evitar el error `Unexpected identifier '_tsx_07xvfw'` al entrar desde una tarjeta.
+- Eliminada la logica de barras dinamicas en stats para reducir riesgo de errores de compilacion/hidratacion.
+
+### Changed
+- Se mantiene la navegacion por click en tarjeta hacia detalle y la visualizacion de estadisticas base en formato de lista estable.
+
+### Added
+- Documentacion del ajuste en `docs/fix-unexpected-identifier-pokemon-detail.md`.
+
+## [0.2.4] - 2026-05-15
+
+### Fixed
+- Ajustada la pagina `pages/pokemon/[name].tsx` para eliminar caracteres especiales conflictivos que podian provocar `Invalid or unexpected token` al abrir el detalle desde una tarjeta.
+- Se simplifico el render de la barra de estadisticas para evitar atributos innecesarios durante la hidratacion.
+
+### Added
+- Documentacion del fix en `docs/fix-invalid-token-pokemon-detail.md`.
+
+## [0.2.3] - 2026-05-15
+
+### Added
+- CTA "Ver estadísticas" en cada tarjeta para reforzar la navegación al detalle de cada Pokémon.
+- Documentación de la mejora en `docs/feature-pokemon-stats-navigation.md`.
+
+### Changed
+- Rediseño de `pages/pokemon/[name].tsx` para mostrar tipos y estadísticas base en formato visual con barras.
+- Mejoras de estilos en la vista de detalle para una lectura más clara y responsive.
+
 ## [0.2.2] - 2026-05-15
 
 ### Added

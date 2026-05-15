@@ -4,6 +4,14 @@
   padding: 2rem 1rem;
 }
 
+.backLink {
+  display: inline-block;
+  margin-bottom: 1rem;
+  text-decoration: none;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
 .name {
   text-transform: capitalize;
   margin-bottom: 0.5rem;
@@ -11,8 +19,31 @@
 
 .meta {
   color: #4b5563;
+  margin-bottom: 1rem;
 }
 
-.list {
+.sectionTitle {
+  margin: 1.25rem 0 0.75rem;
+}
+
+.typeList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.typePill {
+  text-transform: capitalize;
+  background: #e5edff;
+  color: #1e3a8a;
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  font-weight: 600;
+}
+
+.simpleStatsList {
   padding-left: 1.25rem;
 }
