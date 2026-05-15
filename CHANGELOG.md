@@ -5,6 +5,18 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [SemVer](https://semver.org/lang/es/).
 
+## [0.2.5] - 2026-05-15
+
+### Fixed
+- Reescrita la pagina `pages/pokemon/[name].tsx` con estructura mas simple para evitar el error `Unexpected identifier '_tsx_07xvfw'` al entrar desde una tarjeta.
+- Eliminada la logica de barras dinamicas en stats para reducir riesgo de errores de compilacion/hidratacion.
+
+### Changed
+- Se mantiene la navegacion por click en tarjeta hacia detalle y la visualizacion de estadisticas base en formato de lista estable.
+
+### Added
+- Documentacion del ajuste en `docs/fix-unexpected-identifier-pokemon-detail.md`.
+
 ## [0.2.4] - 2026-05-15
 
 ### Fixed

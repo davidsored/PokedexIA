@@ -9,8 +9,6 @@ interface PokemonPageProps {
   pokemon: Pokemon;
 }
 
-const MAX_BASE_STAT = 255;
-
 export default function PokemonDetailPage({ pokemon }: PokemonPageProps) {
   const officialArtwork =
     pokemon.sprites.other?.["official-artwork"]?.front_default ??
@@ -23,41 +21,28 @@ export default function PokemonDetailPage({ pokemon }: PokemonPageProps) {
         Volver a la Pokedex
       </Link>
 
-      <section className={styles.header}>
-        <Image src={officialArtwork} alt={pokemon.name} width={220} height={220} priority />
-        <div>
-          <h1 className={styles.name}>{pokemon.name}</h1>
-          <p className={styles.meta}>ID: #{pokemon.id.toString().padStart(3, "0")}</p>
+      <h1 className={styles.name}>{pokemon.name}</h1>
+      <p className={styles.meta}>ID: #{pokemon.id.toString().padStart(3, "0")}</p>
 
-          <h2 className={styles.sectionTitle}>Tipos</h2>
-          <ul className={styles.typeList}>
-            {pokemon.types.map((item) => (
-              <li key={item.slot} className={styles.typePill}>
-                {item.type.name}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+      <Image src={officialArtwork} alt={pokemon.name} width={220} height={220} priority />
 
-      <section>
-        <h2 className={styles.sectionTitle}>Estadisticas base</h2>
-        <ul className={styles.statsList}>
-          {pokemon.stats.map((item) => {
-            const percentage = Math.min((item.base_stat / MAX_BASE_STAT) * 100, 100);
+      <h2 className={styles.sectionTitle}>Tipos</h2>
+      <ul className={styles.typeList}>
+        {pokemon.types.map((item) => (
+          <li key={item.slot} className={styles.typePill}>
+            {item.type.name}
+          </li>
+        ))}
+      </ul>
 
-            return (
-              <li key={item.stat.name} className={styles.statItem}>
-                <span className={styles.statName}>{item.stat.name}</span>
-                <span className={styles.statValue}>{item.base_stat}</span>
-                <div className={styles.statBarTrack}>
-                  <div className={styles.statBarFill} style={{ width: `${percentage}%` }} />
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
+      <h2 className={styles.sectionTitle}>Estadisticas base</h2>
+      <ul className={styles.simpleStatsList}>
+        {pokemon.stats.map((item) => (
+          <li key={item.stat.name}>
+            <strong>{item.stat.name}:</strong> {item.base_stat}
+          </li>
+        ))}
+      </ul>
     </main>
   );
 }
