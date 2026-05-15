@@ -5,6 +5,19 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [SemVer](https://semver.org/lang/es/).
 
+## [0.3.0] - 2026-05-15
+
+### Added
+- Nuevo archivo `pages/_app.tsx` para importar `styles/globals.css` y registrar meta tags base de la app.
+- Nuevo componente `components/PokemonListRow.tsx` para render en modo lista con estilos Tailwind y accesibilidad.
+- Nuevo archivo `styles/globals.css` con `@import "tailwindcss"`, variables CSS y soporte dark mode por media query.
+- Nuevos archivos `tailwind.config.js` y `postcss.config.js` para soporte de utilidades Tailwind.
+- Documentación del rediseño en `docs/feature-tailwind-frontend-parity.md`.
+
+### Changed
+- Rediseño completo de `pages/index.tsx` para replicar estructura/estilos solicitados con utilidades Tailwind, toggle card/lista, buscador accesible y empty state.
+- Refactor de `components/PokemonCard.tsx` para usar clases Tailwind exactas, `next/image` con `fill/sizes` y atributos ARIA.
+
 ## [0.2.5] - 2026-05-15
 
 ### Fixed
