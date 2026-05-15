@@ -19,6 +19,19 @@ interface HomeProps {
 
 export default function Home({ pokemons }: HomeProps) {
   const [viewMode, setViewMode] = useState<ViewMode>("card");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredPokemons = useMemo(() => {
+    const normalizedSearchTerm = searchTerm.trim().toLowerCase();
+
+    if (!normalizedSearchTerm) {
+      return pokemons;
+    }
+
+    return pokemons.filter((pokemon) =>
+      pokemon.name.toLowerCase().includes(normalizedSearchTerm)
+    );
+  }, [pokemons, searchTerm]);
 
   const containerClassName = useMemo(
     () => (viewMode === "card" ? styles.grid : styles.list),
@@ -32,7 +45,7 @@ export default function Home({ pokemons }: HomeProps) {
         <p className={styles.subtitle}>Explora los 151 Pokémon originales</p>
       </header>
 
-      <section className={styles.controls} aria-label="Cambiar visualización">
+      <section className={styles.controls} aria-label="Controles de visualización y búsqueda">
         <button
           type="button"
           onClick={() => setViewMode("card")}
@@ -53,10 +66,22 @@ export default function Home({ pokemons }: HomeProps) {
         >
           Modo Lista
         </button>
+        <input
+          type="search"
+          value={searchTerm}
+          onChange={(event) => setSearchTerm(event.target.value)}
+          placeholder="Buscar Pokémon por nombre"
+          className={styles.searchInput}
+          aria-label="Buscar Pokémon por nombre"
+        />
       </section>
 
+      <p className={styles.resultsCount}>
+        Mostrando {filteredPokemons.length} de {pokemons.length} Pokémon
+      </p>
+
       <section className={containerClassName}>
-        {pokemons.map((pokemon) => (
+        {filteredPokemons.map((pokemon) => (
           <PokemonCard key={pokemon.id} {...pokemon} viewMode={viewMode} />
         ))}
       </section>
