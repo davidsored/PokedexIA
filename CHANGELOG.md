@@ -5,6 +5,13 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [SemVer](https://semver.org/lang/es/).
 
+## [0.2.2] - 2026-05-15
+
+### Added
+- Buscador en la home para filtrar Pokémon por nombre en tiempo real mientras se escribe.
+- Indicador de resultados visibles con el formato `Mostrando X de 151 Pokémon`.
+- Documentación de la feature en `docs/feature-home-search-filter.md`.
+
 ## [0.2.1] - 2026-05-15
 
 ### Fixed
