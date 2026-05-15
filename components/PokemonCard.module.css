@@ -1,19 +1,38 @@
 .card {
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  border: 1px solid #d7def1;
+  border-radius: 14px;
   padding: 1rem;
   background: #ffffff;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 18px rgba(30, 42, 90, 0.14);
+}
+
+.listItem {
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 1rem;
+  text-align: left;
 }
 
 .image {
   width: 120px;
   height: 120px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .title {
@@ -24,6 +43,6 @@
 
 .id {
   margin: 0;
-  color: #6b7280;
-  font-weight: 600;
+  color: #56607d;
+  font-weight: 700;
 }

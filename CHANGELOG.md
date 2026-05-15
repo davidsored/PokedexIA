@@ -5,6 +5,28 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [SemVer](https://semver.org/lang/es/).
 
+## [0.2.1] - 2026-05-15
+
+### Fixed
+- Eliminados los archivos JavaScript duplicados de páginas (`pages/index.js` y `pages/pokemon/[name].js`) que provocaban `Duplicate page detected` en Next.js.
+- Eliminados duplicados JS restantes (`components/PokemonCard.js` y `lib/axios.js`) para mantener el proyecto en TypeScript de forma consistente.
+
+### Added
+- Documentación del ajuste en `docs/fix-remove-js-duplicates.md`.
+
+## [0.2.0] - 2026-05-15
+
+### Added
+- Selector de visualización en home para alternar entre **Modo Card** (rejilla) y **Modo Lista** (lista vertical).
+- Nuevo documento `docs/feature-home-theme-view-modes.md` con el detalle técnico de la mejora.
+
+### Changed
+- Rediseño de la página principal con una estética más alineada a la temática Pokémon (fondo, tipografía visual y controles).
+- Adaptación del componente `PokemonCard` para soportar visualización en formato lista horizontal.
+
+### Fixed
+- Mitigación de errores recurrentes `TimeoutError` y `upstream image response timed out` al desactivar la optimización proxy de `next/image` (`images.unoptimized = true`).
+
 ## [0.1.3] - 2026-05-14
 
 ### Fixed

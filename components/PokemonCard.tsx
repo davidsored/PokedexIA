@@ -6,11 +6,20 @@ interface PokemonCardProps {
   id: number;
   name: string;
   image: string;
+  viewMode?: "card" | "list";
 }
 
-export default function PokemonCard({ id, name, image }: PokemonCardProps) {
+export default function PokemonCard({
+  id,
+  name,
+  image,
+  viewMode = "card",
+}: PokemonCardProps) {
   return (
-    <Link href={`/pokemon/${name}`} className={styles.card}>
+    <Link
+      href={`/pokemon/${name}`}
+      className={`${styles.card} ${viewMode === "list" ? styles.listItem : ""}`}
+    >
       <Image
         src={image}
         alt={`Ilustración oficial de ${name}`}
@@ -19,8 +28,10 @@ export default function PokemonCard({ id, name, image }: PokemonCardProps) {
         className={styles.image}
         priority={id <= 12}
       />
-      <h3 className={styles.title}>{name}</h3>
-      <p className={styles.id}>#{id.toString().padStart(3, "0")}</p>
+      <div className={styles.content}>
+        <h3 className={styles.title}>{name}</h3>
+        <p className={styles.id}>#{id.toString().padStart(3, "0")}</p>
+      </div>
     </Link>
   );
 }
