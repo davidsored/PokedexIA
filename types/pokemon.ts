@@ -27,6 +27,15 @@ export interface PokemonSprites {
   };
 }
 
+export interface PokemonAbilityReference {
+  ability: {
+    name: string;
+    url: string;
+  };
+  is_hidden: boolean;
+  slot: number;
+}
+
 export interface PokemonListItem {
   name: string;
   url: string;
@@ -47,4 +56,30 @@ export interface Pokemon {
   sprites: PokemonSprites;
   types: PokemonType[];
   stats: PokemonStat[];
+  abilities: PokemonAbilityReference[];
+}
+
+export interface PokemonSpeciesGenus {
+  genus: string;
+  language: {
+    name: string;
+    url: string;
+  };
+}
+
+export interface PokemonSpecies {
+  genera: PokemonSpeciesGenus[];
+}
+
+export interface AbilityEffectEntry {
+  effect: string;
+  short_effect: string;
+  language: {
+    name: string;
+    url: string;
+  };
+}
+
+export interface Ability {
+  effect_entries: AbilityEffectEntry[];
 }

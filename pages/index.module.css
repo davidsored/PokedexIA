@@ -1,83 +1,345 @@
-.container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 2rem 1rem 3rem;
+.page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #e9f3ff 0%, #fff2cc 100%);
+  background: #fbf9f8;
+  color: #1b1c1c;
+  font-family: var(--font-space-mono), monospace;
 }
 
-.header {
-  margin-bottom: 1.5rem;
-}
-
-.title {
-  font-size: 2.2rem;
-  margin: 0;
-  color: #1d2a57;
-}
-
-.subtitle {
-  margin: 0.4rem 0 0;
-  color: #36457a;
-  font-weight: 500;
-}
-
-.controls {
+.topBar {
+  position: fixed;
+  top: 0;
+  z-index: 40;
+  width: 100%;
+  height: 4rem;
+  padding: 0 1rem;
   display: flex;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
-  flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+  background: #bc0100;
+  color: #ffffff;
+  border-bottom: 4px solid #111111;
+  box-shadow: 4px 4px 0 0 #111111;
 }
 
-.controlButton {
-  border: 2px solid #1d2a57;
-  background: white;
-  color: #1d2a57;
+.brandBlock {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pokeball {
+  position: relative;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 4px solid #111111;
   border-radius: 999px;
-  padding: 0.5rem 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
+  background: #ffffff;
+  flex-shrink: 0;
 }
 
-.controlButton:hover {
-  background: #f2f6ff;
+.pokeballTop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: #eb0000;
+  border-bottom: 2px solid #111111;
 }
 
-.active {
-  background: #ffcb05;
-  border-color: #b39500;
-}
-
-.searchInput {
-  border: 2px solid #1d2a57;
+.pokeballCenter {
+  position: relative;
+  z-index: 1;
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 2px solid #111111;
   border-radius: 999px;
-  padding: 0.52rem 1rem;
-  font-size: 0.95rem;
-  min-width: 240px;
-  color: #1d2a57;
   background: #ffffff;
 }
 
+.brandTitle,
+.sidebarTitle,
+.emptyTitle {
+  margin: 0;
+  font-family: var(--font-press-start), monospace;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.sidebar {
+  display: none;
+}
+
+.main {
+  min-height: calc(100vh - 72px);
+  padding: 5.5rem 1rem 7rem;
+}
+
+.searchSection {
+  margin-bottom: 2rem;
+}
+
+.searchBox {
+  position: relative;
+  max-width: 42rem;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  background: #ffffff;
+  border: 4px solid #111111;
+}
+
+.searchIcon {
+  padding-left: 0.75rem;
+  font-family: var(--font-press-start), monospace;
+  font-size: 0.8rem;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 1rem 2.75rem 1rem 0.75rem;
+  border: 0;
+  background: transparent;
+  color: #111111;
+  font-family: var(--font-space-mono), monospace;
+  font-size: 1rem;
+}
+
 .searchInput:focus {
-  outline: 2px solid #ffcb05;
-  outline-offset: 1px;
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: #603e39;
+}
+
+.filterRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.filterButton {
+  padding: 0.65rem 0.9rem;
+  border: 4px solid #111111;
+  background: #ffffff;
+  color: #111111;
+  font-family: var(--font-press-start), monospace;
+  font-size: 0.55rem;
+  line-height: 1.6;
+  box-shadow: 4px 4px 0 0 #111111;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.filterButton:hover {
+  background: #f6f3f2;
+}
+
+.filterButtonPressed,
+.filterButton:active,
+.filterButtonActive {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 0 #111111;
+}
+
+.filterButtonActive {
+  background: #3c4dcb;
+  color: #ffffff;
+}
+
+.typeBug {
+  background: #a8b820;
+  color: #ffffff;
+}
+
+.typeDragon {
+  background: #7038f8;
+  color: #ffffff;
+}
+
+.typeElectric {
+  background: #ffcc33;
+  color: #111111;
+}
+
+.typeFairy {
+  background: #ee99ac;
+  color: #111111;
+}
+
+.typeFighting {
+  background: #c03028;
+  color: #ffffff;
+}
+
+.typeFire {
+  background: #ff4422;
+  color: #ffffff;
+}
+
+.typeFlying {
+  background: #7d8cff;
+  color: #ffffff;
+}
+
+.typeGhost {
+  background: #705898;
+  color: #ffffff;
+}
+
+.typeGrass {
+  background: #77cc55;
+  color: #111111;
+}
+
+.typeGround {
+  background: #d4b15d;
+  color: #111111;
+}
+
+.typeIce {
+  background: #98d8d8;
+  color: #111111;
+}
+
+.typeNormal {
+  background: #c4c4a4;
+  color: #111111;
+}
+
+.typePoison {
+  background: #aa5599;
+  color: #ffffff;
+}
+
+.typePsychic {
+  background: #ff5599;
+  color: #ffffff;
+}
+
+.typeRock {
+  background: #b8a038;
+  color: #111111;
+}
+
+.typeSteel {
+  background: #b8b8d0;
+  color: #111111;
+}
+
+.typeWater {
+  background: #3399ff;
+  color: #ffffff;
 }
 
 .resultsCount {
-  margin: 0 0 1rem;
-  color: #1d2a57;
-  font-weight: 600;
+  margin: 1rem 0 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 2rem;
 }
 
-.list {
+.emptyState {
+  padding: 2rem;
+  border: 4px solid #111111;
+  background: #ffffff;
+  box-shadow: 4px 4px 0 0 #111111;
+}
+
+.emptyText {
+  margin: 0.75rem 0 0;
+  font-size: 1rem;
+}
+
+.emptyText,
+.sidebarVersion,
+.footerCopy,
+.footerLink {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.footer {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
+  padding: 1rem;
+  border-top: 4px solid #111111;
+  background: #dcd9d9;
+}
+
+.footerLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.footerLink {
+  text-decoration: underline;
+}
+
+@media (min-width: 768px) {
+  .topBar {
+    padding: 0 3rem;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 4rem;
+    left: 0;
+    z-index: 30;
+    width: 16rem;
+    height: calc(100vh - 4rem);
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    border-right: 4px solid #111111;
+    background: #fbf9f8;
+  }
+
+  .sidebarHeader {
+    margin-bottom: 0;
+  }
+
+  .sidebarTitle {
+    color: #bc0100;
+  }
+
+  .main {
+    margin-left: 16rem;
+    padding: 5.5rem 3rem 7rem;
+  }
+
+  .footer {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 3rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .brandTitle {
+    font-size: 0.72rem;
+  }
+
+  .searchInput {
+    font-size: 0.9rem;
+  }
+
+  .grid {
+    gap: 1.25rem;
+  }
 }

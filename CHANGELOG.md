@@ -5,6 +5,39 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [SemVer](https://semver.org/lang/es/).
 
+## [0.2.8] - 2026-05-22
+
+### Added
+- Documentacion del rediseño visual 8-bit del detalle en `docs/feature-pokemon-detail-8bit-style.md`.
+
+### Changed
+- La pagina `pages/pokemon/[name].tsx` adopta ahora el mismo lenguaje visual 8-bit de la home con tipografias retro, bordes pixelados y paneles tipo consola.
+- Se mantuvo la estructura actual del detalle con nombre, tipos, base stats, abilities y navegacion entre Pokemon.
+
+## [0.2.7] - 2026-05-22
+
+### Added
+- Nueva home 8-bit inspirada en el mockup de Google Stitch con barra superior, sidebar desktop, buscador retro, filtros por tipo y rejilla de tarjetas.
+- Integracion de fuentes `Press Start 2P` y `Space Mono` mediante `next/font/google` para reforzar la estetica retro.
+- Documentacion del rediseño en `docs/feature-home-stitch-8bit-adaptation.md`.
+
+### Changed
+- `pages/index.tsx` ahora filtra por nombre o ID y por tipo usando datos reales de PokeAPI.
+- `components/PokemonCard.tsx` y su CSS fueron rehechos para mostrar sprites clasicos, nombre y tipos en estilo 8-bit.
+- Se elimino el ultimo punto decorativo restante de la imagen en la vista de detalle.
+
+## [0.2.6] - 2026-05-21
+
+### Added
+- Nueva vista de detalle inspirada en el mockup de Google Stitch con layout tipo Pokedex, panel principal, seccion de stats, seccion de habilidades y navegacion entre Pokemon.
+- Consulta de `pokemon-species` para mostrar la categoria del Pokemon.
+- Consulta de `ability` para mostrar descripciones reales de habilidades.
+- Documentacion del cambio en `docs/feature-pokemon-detail-stitch-adaptation.md`.
+
+### Changed
+- Rediseño completo de `pages/pokemon/[name].tsx` y `pages/pokemon/[name].module.css` para adaptar el detalle al estilo visual solicitado sin introducir Tailwind en el proyecto.
+- Extension de `types/pokemon.ts` para cubrir habilidades, species y respuestas de abilities.
+
 ## [0.2.5] - 2026-05-15
 
 ### Fixed
