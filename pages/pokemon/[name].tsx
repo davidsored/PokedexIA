@@ -82,6 +82,7 @@ const TYPE_COLORS: Record<string, string> = {
 };
 
 const DEFAULT_ABILITY_DESCRIPTION = "Sin descripcion disponible en PokeAPI.";
+const HOME_POKEMON_LIMIT = 251;
 
 function formatName(value: string) {
   return value.replace(/-/g, " ");
@@ -263,7 +264,7 @@ export default function PokemonDetailPage({
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const { data } = await api.get<PokemonListResponse>("pokemon", {
-    params: { limit: 151, offset: 0 },
+    params: { limit: HOME_POKEMON_LIMIT, offset: 0 },
   });
 
   return {
@@ -279,7 +280,7 @@ export const getStaticProps: GetStaticProps<PokemonPageProps> = async ({ params 
     api.get<Pokemon>(`pokemon/${name}`),
     api.get<PokemonSpecies>(`pokemon-species/${name}`),
     api.get<PokemonListResponse>("pokemon", {
-      params: { limit: 151, offset: 0 },
+      params: { limit: HOME_POKEMON_LIMIT, offset: 0 },
     }),
   ]);
 

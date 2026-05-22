@@ -5,6 +5,38 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [SemVer](https://semver.org/lang/es/).
 
+## [0.3.2] - 2026-05-22
+
+### Added
+- Integradas en `README.md` las capturas reales de la home y del detalle desde `docs/screenshots/`.
+- Documentacion del ajuste en `docs/chore-readme-screenshots.md`.
+
+### Changed
+- Limpieza de la seccion visual del README y del roadmap para reflejar que las capturas ya forman parte del repositorio.
+
+## [0.3.1] - 2026-05-22
+
+### Fixed
+- Corregida la generacion de paginas de detalle para incluir tambien los Pokemon de Johto.
+- Ajustado el listado auxiliar del detalle para que la navegacion anterior/siguiente use los `251` Pokemon disponibles en la home.
+
+### Added
+- Documentacion del ajuste en `docs/fix-johto-detail-paths.md`.
+
+### Changed
+- `README.md` deja preparado el bloque de capturas y aclara que la imagen adjunta debe guardarse en el repositorio para poder enlazarla.
+
+## [0.3.0] - 2026-05-22
+
+### Added
+- Archivo `LICENSE` con licencia MIT.
+- Documentacion del ajuste de publicacion en `docs/chore-public-readme-license.md`.
+
+### Changed
+- Reescritura completa de `README.md` para describir `PokedexIA` como proyecto de portfolio.
+- Actualizacion de `package.json` para usar el nombre `pokedexia` y metadatos de descripcion y licencia.
+- Ampliacion de `.gitignore` con exclusiones comunes de editores y archivos temporales.
+
 ## [0.2.9] - 2026-05-22
 
 ### Added

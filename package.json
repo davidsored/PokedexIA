@@ -1,7 +1,9 @@
 {
-  "name": "my-app",
-  "version": "0.2.9",
+  "name": "pokedexia",
+  "version": "0.3.2",
   "private": true,
+  "description": "Pokedex interactiva en Next.js con PokeAPI y estetica 8-bit.",
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
