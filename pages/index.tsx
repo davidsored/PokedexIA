@@ -11,6 +11,7 @@ interface HomePokemon {
   name: string;
   image: string;
   types: string[];
+  region: "kanto" | "johto";
 }
 
 interface HomeProps {
@@ -30,6 +31,9 @@ const spaceMono = Space_Mono({
 });
 
 const TYPE_PRIORITY = ["fire", "water", "grass", "electric", "poison", "psychic"];
+const REGION_OPTIONS = ["all", "kanto", "johto"] as const;
+
+type RegionFilter = (typeof REGION_OPTIONS)[number];
 
 const TYPE_CLASS_NAMES: Record<string, string> = {
   bug: "typeBug",
@@ -76,9 +80,22 @@ function sortTypes(types: string[]) {
   });
 }
 
+function formatRegionLabel(region: RegionFilter) {
+  if (region === "all") {
+    return "ALL REGIONS";
+  }
+
+  return region.toUpperCase();
+}
+
+function getPokemonRegion(id: number): "kanto" | "johto" {
+  return id <= 151 ? "kanto" : "johto";
+}
+
 export default function Home({ pokemons }: HomeProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("all");
+  const [selectedRegion, setSelectedRegion] = useState<RegionFilter>("all");
 
   const availableTypes = useMemo(() => {
     const uniqueTypes = new Set<string>();
@@ -102,9 +119,12 @@ export default function Home({ pokemons }: HomeProps) {
       const matchesType =
         selectedType === "all" || pokemon.types.some((type) => type === selectedType);
 
-      return matchesSearch && matchesType;
+      const matchesRegion =
+        selectedRegion === "all" || pokemon.region === selectedRegion;
+
+      return matchesSearch && matchesType && matchesRegion;
     });
-  }, [pokemons, searchTerm, selectedType]);
+  }, [pokemons, searchTerm, selectedRegion, selectedType]);
 
   return (
     <div className={`${styles.page} ${pressStart.variable} ${spaceMono.variable}`}>
@@ -122,6 +142,24 @@ export default function Home({ pokemons }: HomeProps) {
         <div className={styles.sidebarHeader}>
           <h2 className={styles.sidebarTitle}>DEX MASTER</h2>
           <p className={styles.sidebarVersion}>V1.0.8-BIT</p>
+        </div>
+
+        <div className={styles.regionSection}>
+          <p className={styles.regionTitle}>REGIONS</p>
+          <div className={styles.regionButtons}>
+            {REGION_OPTIONS.map((region) => (
+              <button
+                key={region}
+                type="button"
+                onClick={() => setSelectedRegion(region)}
+                className={`${styles.regionButton} ${
+                  selectedRegion === region ? styles.regionButtonActive : ""
+                }`}
+              >
+                {formatRegionLabel(region)}
+              </button>
+            ))}
+          </div>
         </div>
       </aside>
 
@@ -199,7 +237,7 @@ export default function Home({ pokemons }: HomeProps) {
 
 export const getStaticProps: GetStaticProps<HomeProps> = async () => {
   const { data } = await api.get<PokemonListResponse>("pokemon", {
-    params: { limit: 151, offset: 0 },
+    params: { limit: 251, offset: 0 },
   });
 
   const pokemonResponses = await Promise.all(
@@ -211,6 +249,7 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
     name: pokemon.name,
     image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`,
     types: pokemon.types.map((item) => item.type.name),
+    region: getPokemonRegion(pokemon.id),
   }));
 
   return {

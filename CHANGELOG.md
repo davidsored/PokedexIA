@@ -5,6 +5,16 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [SemVer](https://semver.org/lang/es/).
 
+## [0.2.9] - 2026-05-22
+
+### Added
+- Filtro lateral de regiones en la home con botones para `ALL REGIONS`, `KANTO` y `JOHTO`.
+- Documentacion del cambio en `docs/feature-home-region-filter-kanto-johto.md`.
+
+### Changed
+- La home ahora carga Pokemon de Kanto y Johto para mostrar un total de 251 entradas.
+- El filtrado del home combina busqueda por nombre o ID, tipo y region.
+
 ## [0.2.8] - 2026-05-22
 
 ### Added
