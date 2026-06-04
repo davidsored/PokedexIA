@@ -19,13 +19,14 @@ export interface PokemonSpriteImage {
   front_default?: string | null;
 }
 
+export interface PokemonOther {
+  "official-artwork"?: PokemonSpriteImage;
+  [key: string]: PokemonSpriteImage | undefined;
+}
+
 export interface PokemonSprites {
   front_default: string | null;
-  other?: {
-    "official-artwork"?: PokemonSpriteImage;
-  } & {
-    [key: string]: PokemonSpriteImage | undefined;
-  };
+  other?: PokemonOther;
 }
 
 export interface PokemonAbilityReference {

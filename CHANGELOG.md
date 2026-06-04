@@ -5,6 +5,11 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [SemVer](https://semver.org/lang/es/).
 
+## [0.3.3] - 2026-06-04
+
+### Fixed
+- Corregida la interfaz `PokemonSprites` en `types/pokemon.ts` para evitar el conflicto de index signature (`TS2411`) que impedia el build en Vercel. La propiedad `"official-artwork"` y la firma de indice generica se unifican ahora en la interfaz `PokemonOther`.
+
 ## [0.3.2] - 2026-05-22
 
 ### Added
