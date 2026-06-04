@@ -15,15 +15,16 @@ export interface PokemonStat {
   };
 }
 
+export interface PokemonSpriteImage {
+  front_default?: string | null;
+}
+
 export interface PokemonSprites {
   front_default: string | null;
   other?: {
-    [key: string]: {
-      front_default?: string | null;
-    };
-    "official-artwork"?: {
-      front_default?: string | null;
-    };
+    "official-artwork"?: PokemonSpriteImage;
+  } & {
+    [key: string]: PokemonSpriteImage | undefined;
   };
 }
 
