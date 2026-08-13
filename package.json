@@ -9,7 +9,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "build:corpus": "tsx scripts/build-pokedex-corpus.ts"
+    "build:corpus": "tsx scripts/build-pokedex-corpus.ts",
+    "test": "tsx --test \"lib/**/*.test.ts\""
   },
   "dependencies": {
     "axios": "^1.13.2",

@@ -20,10 +20,10 @@ Cada paso es verificable antes de avanzar al siguiente. Ningún paso implica des
 - **Validación realizada:** el script genera `data/pokedex-corpus.json` con 251 entradas, IDs únicos 1–251, todas con `id`/`name`/`text`/`embedding` de 768 dimensiones y vectores no nulos (1,9 MB). Revisión manual de Charizard, Gyarados y Celebi confirmando que el texto refleja tipos, stats y habilidades reales. `tsc --noEmit` sin errores.
 - **Desviaciones respecto al diseño inicial** (recogidas en `ia-decision.md`): salida en `data/` en vez de `public/data/`; modelo `gemini-embedding-001` en vez de `text-embedding-004` (inexistente en la cuenta); lotes de 50 con pausa por el límite de 100 embeddings/minuto del tier gratuito.
 
-### Paso 3 — Utilidad de búsqueda por similitud
+### Paso 3 — Utilidad de búsqueda por similitud ✅ COMPLETADO
 
-- **Qué se construye:** `lib/semanticSearch.ts` con una función `findRelevantPokemon(queryEmbedding, k)` que calcula similitud coseno contra el JSON del paso 2 y devuelve el top-k.
-- **Validación:** test unitario con un JSON de prueba pequeño (3-4 vectores conocidos) que confirme que devuelve el orden esperado. No requiere llamar al proveedor de IA (usar vectores fijos en el test).
+- **Qué se construyó:** `lib/semanticSearch.ts` con `cosineSimilarity(a, b)` y `findRelevantPokemon(queryEmbedding, k, entries?)`, que recorre el corpus del paso 2 y devuelve el top-k ordenado por similitud. El parámetro `entries` permite inyectar un corpus de prueba sin tocar el real.
+- **Validación realizada:** 11 tests en verde con `npm test` (runner nativo de Node vía `tsx --test`, sin dependencias de testing añadidas): casos de vectores idénticos, ortogonales, opuestos, nulos, de distinta dimensión, orden del ranking, límite `k`, y una comprobación sobre el corpus real (251 entradas; buscar con el vector de Charizard lo devuelve a él en primera posición). `tsc --noEmit` y `eslint` sin errores. Ningún test llama a Gemini.
 
 ### Paso 4 — API route de chat
 
