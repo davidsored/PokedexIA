@@ -14,10 +14,11 @@ Cada paso es verificable antes de avanzar al siguiente. Ningún paso implica des
 - **Qué se construye:** variable de entorno definida en `.env.local` (local) y en Vercel (preview/producción); entrada añadida a `.env.example`; confirmar que `.env*.local` está en `.gitignore`.
 - **Validación:** `git status` no muestra el archivo `.env.local`; `process.env.<VAR>` es accesible en un script de prueba local.
 
-### Paso 2 — Script de generación del corpus (build time)
+### Paso 2 — Script de generación del corpus (build time) ✅ COMPLETADO
 
-- **Qué se construye:** `scripts/build-pokedex-corpus.ts`, que recorre los 251 Pokémon ya usados por `getStaticPaths`, aplana sus datos (`types/pokemon.ts`) a texto, y genera embeddings vía el proveedor elegido.
-- **Validación:** ejecutar el script localmente (`npx tsx scripts/build-pokedex-corpus.ts` o similar) y comprobar que genera `public/data/pokedex-embeddings.json` con 251 entradas, cada una con `id`, `name`, `text` y `embedding` no vacíos. Revisar manualmente 2-3 entradas para confirmar que el texto refleja los datos reales del Pokémon.
+- **Qué se construyó:** `scripts/build-pokedex-corpus.ts`, que recorre los 251 Pokémon ya usados por `getStaticPaths`, aplana sus datos (`types/pokemon.ts`) a texto y genera embeddings con `gemini-embedding-001`. Expuesto como `npm run build:corpus`. Única dependencia nueva: `tsx` (devDependency, solo para ejecutar TypeScript fuera de Next.js).
+- **Validación realizada:** el script genera `data/pokedex-corpus.json` con 251 entradas, IDs únicos 1–251, todas con `id`/`name`/`text`/`embedding` de 768 dimensiones y vectores no nulos (1,9 MB). Revisión manual de Charizard, Gyarados y Celebi confirmando que el texto refleja tipos, stats y habilidades reales. `tsc --noEmit` sin errores.
+- **Desviaciones respecto al diseño inicial** (recogidas en `ia-decision.md`): salida en `data/` en vez de `public/data/`; modelo `gemini-embedding-001` en vez de `text-embedding-004` (inexistente en la cuenta); lotes de 50 con pausa por el límite de 100 embeddings/minuto del tier gratuito.
 
 ### Paso 3 — Utilidad de búsqueda por similitud
 

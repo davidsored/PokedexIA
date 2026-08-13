@@ -1,0 +1,278 @@
+/**
+ * Genera el corpus indexable para el chat RAG de la Pokedex.
+ *
+ * Recorre los 251 Pokemon de Kanto/Johto (mismo rango que usa la home y
+ * getStaticPaths), aplana sus datos de PokeAPI a un texto plano describible,
+ * y pide a Gemini un embedding por Pokemon.
+ *
+ * Salida: data/pokedex-corpus.json
+ *
+ * Uso: npx tsx scripts/build-pokedex-corpus.ts
+ */
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { resolve } from "node:path";
+import api from "../lib/axios";
+import type {
+  Ability,
+  Pokemon,
+  PokemonListResponse,
+  PokemonSpecies,
+} from "../types/pokemon";
+
+const POKEMON_LIMIT = 251;
+const EMBEDDING_MODEL = "gemini-embedding-001";
+/**
+ * gemini-embedding-001 devuelve 3072 dimensiones por defecto. 768 es suficiente
+ * para discriminar entre 251 fichas y deja el JSON en un tamano manejable.
+ */
+const EMBEDDING_DIMENSIONS = 768;
+/** Peticiones simultaneas a PokeAPI. Bajo a proposito: no hay prisa y evita 429. */
+const FETCH_CONCURRENCY = 8;
+/**
+ * El tier gratuito permite 100 embeddings por minuto, y cada elemento del lote
+ * cuenta como una peticion. Lotes de 50 con pausa entre ellos se mantienen
+ * comodamente por debajo del limite.
+ */
+const EMBED_BATCH_SIZE = 50;
+/** Pausa entre lotes para no superar la cuota por minuto del tier gratuito. */
+const EMBED_BATCH_DELAY_MS = 35_000;
+/** Decimales conservados por componente del vector (reduce el JSON a ~1/3). */
+const EMBEDDING_PRECISION = 6;
+
+const OUTPUT_PATH = resolve(process.cwd(), "data", "pokedex-corpus.json");
+
+export interface CorpusEntry {
+  id: number;
+  name: string;
+  text: string;
+  embedding: number[];
+}
+
+/**
+ * Carga .env.local a process.env. Los scripts sueltos no pasan por Next.js,
+ * que es quien normalmente se encarga de esto.
+ */
+function loadEnvLocal() {
+  try {
+    const raw = readFileSync(resolve(process.cwd(), ".env.local"), "utf8");
+
+    for (const line of raw.split("\n")) {
+      const match = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
+      if (match && !process.env[match[1]]) {
+        process.env[match[1]] = match[2].replace(/^["']|["']$/g, "");
+      }
+    }
+  } catch {
+    // Sin .env.local: se asume que la variable ya viene del entorno.
+  }
+}
+
+function formatName(value: string) {
+  return value.replace(/-/g, " ");
+}
+
+const STAT_LABELS: Record<string, string> = {
+  hp: "puntos de salud (HP)",
+  attack: "ataque fisico",
+  defense: "defensa fisica",
+  "special-attack": "ataque especial",
+  "special-defense": "defensa especial",
+  speed: "velocidad",
+};
+
+/**
+ * Convierte una ficha de PokeAPI en un parrafo de texto plano.
+ * Este texto es a la vez lo que se vectoriza y lo que se inyecta como
+ * contexto en el prompt, asi que debe ser legible y autocontenido.
+ */
+function buildPokemonText(
+  pokemon: Pokemon,
+  category: string,
+  abilities: { name: string; isHidden: boolean; description: string }[]
+) {
+  const displayName = formatName(pokemon.name);
+  const types = pokemon.types.map((item) => formatName(item.type.name)).join("/");
+
+  const stats = pokemon.stats
+    .map((item) => `${STAT_LABELS[item.stat.name] ?? formatName(item.stat.name)} ${item.base_stat}`)
+    .join(", ");
+
+  const totalStats = pokemon.stats.reduce((sum, item) => sum + item.base_stat, 0);
+
+  const abilityText = abilities
+    .map((item) => `${formatName(item.name)}${item.isHidden ? " (habilidad oculta)" : ""}: ${item.description}`)
+    .join(" ");
+
+  return [
+    `${displayName} es el Pokemon numero ${pokemon.id} de la Pokedex, de tipo ${types}.`,
+    `Categoria: ${category}.`,
+    `Mide ${(pokemon.height / 10).toFixed(1)} metros y pesa ${(pokemon.weight / 10).toFixed(1)} kilogramos.`,
+    `Estadisticas base: ${stats}. Total de estadisticas base: ${totalStats}.`,
+    `Habilidades: ${abilityText}`,
+  ].join(" ");
+}
+
+const DEFAULT_ABILITY_DESCRIPTION = "Sin descripcion disponible en PokeAPI.";
+
+function getEnglishCategory(species: PokemonSpecies) {
+  return species.genera.find((entry) => entry.language.name === "en")?.genus ?? "Pokemon";
+}
+
+function getEnglishAbilityDescription(ability: Ability) {
+  const entry = ability.effect_entries.find((item) => item.language.name === "en");
+  return entry?.short_effect ?? entry?.effect ?? DEFAULT_ABILITY_DESCRIPTION;
+}
+
+/** Ejecuta `worker` sobre `items` con un maximo de `limit` tareas simultaneas. */
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  limit: number,
+  worker: (item: T, index: number) => Promise<R>
+): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let cursor = 0;
+
+  async function run() {
+    while (cursor < items.length) {
+      const index = cursor++;
+      results[index] = await worker(items[index], index);
+    }
+  }
+
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, run));
+  return results;
+}
+
+async function fetchPokemonText(name: string) {
+  const [{ data: pokemon }, { data: species }] = await Promise.all([
+    api.get<Pokemon>(`pokemon/${name}`),
+    api.get<PokemonSpecies>(`pokemon-species/${name}`),
+  ]);
+
+  const abilityResponses = await Promise.allSettled(
+    pokemon.abilities.map((item) => api.get<Ability>(`ability/${item.ability.name}`))
+  );
+
+  const abilities = pokemon.abilities.map((item, index) => {
+    const response = abilityResponses[index];
+
+    return {
+      name: item.ability.name,
+      isHidden: item.is_hidden,
+      description:
+        response.status === "fulfilled"
+          ? getEnglishAbilityDescription(response.value.data)
+          : DEFAULT_ABILITY_DESCRIPTION,
+    };
+  });
+
+  return {
+    id: pokemon.id,
+    name: pokemon.name,
+    text: buildPokemonText(pokemon, getEnglishCategory(species), abilities),
+  };
+}
+
+interface BatchEmbedResponse {
+  embeddings: { values: number[] }[];
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/** Pide a Gemini los embeddings de un lote de textos, en el mismo orden. */
+async function embedBatch(texts: string[], apiKey: string, attempt = 1): Promise<number[][]> {
+  const endpoint =
+    `https://generativelanguage.googleapis.com/v1beta/models/${EMBEDDING_MODEL}:batchEmbedContents` +
+    `?key=${apiKey}`;
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      requests: texts.map((text) => ({
+        model: `models/${EMBEDDING_MODEL}`,
+        content: { parts: [{ text }] },
+        // Optimiza el vector para su uso como documento recuperable.
+        taskType: "RETRIEVAL_DOCUMENT",
+        outputDimensionality: EMBEDDING_DIMENSIONS,
+      })),
+    }),
+  });
+
+  // 429 = cuota por minuto agotada. Se espera y se reintenta, no es un fallo real.
+  if (response.status === 429 && attempt <= 5) {
+    const waitMs = 60_000 * attempt;
+    console.log(`  Cuota por minuto alcanzada, esperando ${waitMs / 1000}s antes de reintentar...`);
+    await sleep(waitMs);
+    return embedBatch(texts, apiKey, attempt + 1);
+  }
+
+  if (!response.ok) {
+    throw new Error(`Gemini respondio ${response.status}: ${await response.text()}`);
+  }
+
+  const data = (await response.json()) as BatchEmbedResponse;
+  return data.embeddings.map((item) =>
+    item.values.map((value) => Number(value.toFixed(EMBEDDING_PRECISION)))
+  );
+}
+
+async function main() {
+  loadEnvLocal();
+
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("Falta GEMINI_API_KEY. Definela en .env.local antes de ejecutar el script.");
+  }
+
+  console.log(`Descargando los ${POKEMON_LIMIT} Pokemon de PokeAPI...`);
+  const { data: list } = await api.get<PokemonListResponse>("pokemon", {
+    params: { limit: POKEMON_LIMIT, offset: 0 },
+  });
+
+  let fetched = 0;
+  const documents = await mapWithConcurrency(list.results, FETCH_CONCURRENCY, async (item) => {
+    const document = await fetchPokemonText(item.name);
+    fetched += 1;
+    if (fetched % 25 === 0 || fetched === list.results.length) {
+      console.log(`  ${fetched}/${list.results.length} fichas procesadas`);
+    }
+    return document;
+  });
+
+  console.log("Generando embeddings con Gemini...");
+  const entries: CorpusEntry[] = [];
+
+  for (let start = 0; start < documents.length; start += EMBED_BATCH_SIZE) {
+    const batch = documents.slice(start, start + EMBED_BATCH_SIZE);
+    const embeddings = await embedBatch(
+      batch.map((document) => document.text),
+      apiKey
+    );
+
+    batch.forEach((document, index) => {
+      entries.push({ ...document, embedding: embeddings[index] });
+    });
+
+    console.log(`  ${entries.length}/${documents.length} embeddings generados`);
+
+    if (start + EMBED_BATCH_SIZE < documents.length) {
+      await sleep(EMBED_BATCH_DELAY_MS);
+    }
+  }
+
+  entries.sort((a, b) => a.id - b.id);
+
+  mkdirSync(resolve(process.cwd(), "data"), { recursive: true });
+  writeFileSync(OUTPUT_PATH, JSON.stringify(entries), "utf8");
+
+  console.log(`Corpus escrito en ${OUTPUT_PATH}`);
+  console.log(`  ${entries.length} entradas, ${entries[0].embedding.length} dimensiones por vector`);
+}
+
+main().catch((error) => {
+  console.error(error instanceof Error ? error.message : error);
+  process.exitCode = 1;
+});

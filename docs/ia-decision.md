@@ -18,7 +18,11 @@ Se añade un script (`scripts/build-pokedex-corpus.ts` o similar, ejecutado en b
 1. Recorre los 251 Pokémon ya soportados por el proyecto (mismo rango Kanto/Johto que usa `getStaticPaths`).
 2. Por cada uno, aplana los campos relevantes de `Pokemon`/`PokemonSpecies` (`types/pokemon.ts`) a un párrafo de texto plano: nombre, tipos, stats base, habilidades (con `short_effect` cuando esté disponible), género (`genus`), altura/peso. Ejemplo: *"Charizard es un Pokémon de tipo fuego/volador. Ataque especial 109, ataque físico 84, velocidad 100..."*.
 3. Genera un embedding por Pokémon a partir de ese texto (proveedor en sección 3).
-4. Escribe el resultado a un JSON estático (`public/data/pokedex-embeddings.json` o `lib/data/`): `{ id, name, text, embedding: number[] }[]`.
+4. Escribe el resultado a un JSON estático **fuera de `public/`**, en `data/pokedex-corpus.json`: `{ id, name, text, embedding: number[] }[]`.
+
+**Ubicación del JSON (decidido durante la implementación):** `data/`, no `public/data/`. El archivo solo lo consume la API route en servidor mediante import estático; alojarlo en `public/` lo expondría como descarga pública de ~2 MB sin que ningún cliente lo necesite.
+
+**Resultado real:** 251 entradas, 768 dimensiones por vector, 1,9 MB de JSON.
 
 **Por qué no runtime:** con 251 registros fijos, regenerar embeddings en cada request (o incluso en cada deploy sin cachear) es coste y latencia gratuitos. Generarlos una vez y versionarlos (o regenerarlos solo cuando cambien los datos fuente) es coherente con el resto del proyecto, que ya trata PokeAPI como una fuente semi-estática.
 
@@ -26,9 +30,9 @@ Se añade un script (`scripts/build-pokedex-corpus.ts` o similar, ejecutado en b
 
 ## 2. Almacenamiento y búsqueda (vector store)
 
-**Decisión: JSON estático servido desde `public/` + búsqueda por similitud coseno en el servidor (API route), sin vector store externo.**
+**Decisión: JSON estático en `data/` importado por el servidor + búsqueda por similitud coseno en la API route, sin vector store externo.**
 
-Con 251 vectores de dimensión ~1500 (según proveedor), el archivo resultante pesa unos pocos MB como máximo. Calcular similitud coseno contra 251 vectores es trivial en cualquier runtime de Node — del orden de milisegundos — no requiere Pinecone, Supabase pgvector, ni ningún servicio dedicado.
+Con 251 vectores de 768 dimensiones, el archivo resultante pesa 1,9 MB. Calcular similitud coseno contra 251 vectores es trivial en cualquier runtime de Node — del orden de milisegundos — no requiere Pinecone, Supabase pgvector, ni ningún servicio dedicado.
 
 Se descarta:
 - **Vector DB externa (Pinecone, Weaviate, Qdrant Cloud, etc.):** infraestructura, cuenta y coste recurrente para un problema que resuelve un `Array.reduce`. Sobre-ingeniería para un proyecto de portfolio de bajo tráfico y dataset fijo.
@@ -40,7 +44,9 @@ El archivo de embeddings se carga en memoria una vez por invocación de la funci
 
 ## 3. Proveedor y modelo de IA
 
-**Decisión: Google Gemini API — `text-embedding-004` (o el modelo de embeddings vigente equivalente) para el corpus, y un modelo de la familia `gemini-*-flash` para el chat.**
+**Decisión: Google Gemini API — `gemini-embedding-001` para el corpus, y un modelo de la familia `gemini-*-flash` para el chat.**
+
+**Corrección tras la implementación del corpus:** la primera elección fue `text-embedding-004`, pero ese modelo devuelve 404 en la cuenta de este proyecto (ya no figura en `ListModels`). Los modelos de embeddings disponibles son `gemini-embedding-001` (estable, el elegido), `gemini-embedding-2` y `gemini-embedding-2-preview`. Se usa `outputDimensionality: 768` en lugar de las 3072 por defecto: suficiente para discriminar entre 251 fichas y mantiene el JSON en 1,9 MB en vez de ~8 MB.
 
 Criterios de selección, en orden:
 1. **Coste cero:** proyecto de portfolio sin monetización → se exige tier gratuito, no "más barato". Gemini ofrece un free tier con límites de requests por minuto/día suficientes para el tráfico esperado (bajo, uso puntual de visitantes del portfolio).
@@ -52,7 +58,7 @@ Criterios de selección, en orden:
 - **Hugging Face Inference API:** cubre ambos (embeddings y chat) en tier gratuito, pero calidad y latencia de los modelos de chat gratuitos disponibles son más variables que las de Gemini Flash.
 - **Embeddings locales (p. ej. `@xenova/transformers`) + Gemini solo para chat:** válida como plan B si en el futuro el tier gratuito de embeddings de Gemini resultara insuficiente o cambiara de condiciones; se descarta como primera opción porque añade una dependencia de inferencia local sin necesidad inmediata, dado que el volumen de embeddings (251 llamadas, generadas una vez o esporádicamente) encaja sin problema en el tier gratuito.
 
-**Nota de riesgo:** los límites y condiciones del tier gratuito de Gemini pueden cambiar. Antes del Paso 0 del plan de implementación, confirmar las cifras vigentes (requests por minuto/día) en la documentación oficial de Google AI Studio.
+**Límite del tier gratuito verificado en la práctica:** 100 peticiones de embedding por minuto (`EmbedContentRequestsPerMinutePerUserPerProjectPerModel-FreeTier`), y cada elemento de un lote de `batchEmbedContents` cuenta como una petición. Por eso el script genera el corpus en lotes de 50 con pausa entre ellos y reintento con espera ante un 429; la generación completa de los 251 embeddings tarda unos 3 minutos. Este límite solo afecta a la generación del corpus (operación puntual), no al chat en runtime.
 
 El volumen de generación de embeddings es un coste único (o esporádico, si se regeneran) de 251 llamadas. El uso recurrente real es la generación de respuesta por consulta de usuario, acotado por el rate limiting descrito en el punto 7.
 
