@@ -12,6 +12,8 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 import api from "../lib/axios";
+import { embedTexts, GeminiError } from "../lib/gemini";
+import type { CorpusEntry } from "../lib/semanticSearch";
 import type {
   Ability,
   Pokemon,
@@ -20,12 +22,6 @@ import type {
 } from "../types/pokemon";
 
 const POKEMON_LIMIT = 251;
-const EMBEDDING_MODEL = "gemini-embedding-001";
-/**
- * gemini-embedding-001 devuelve 3072 dimensiones por defecto. 768 es suficiente
- * para discriminar entre 251 fichas y deja el JSON en un tamano manejable.
- */
-const EMBEDDING_DIMENSIONS = 768;
 /** Peticiones simultaneas a PokeAPI. Bajo a proposito: no hay prisa y evita 429. */
 const FETCH_CONCURRENCY = 8;
 /**
@@ -40,13 +36,6 @@ const EMBED_BATCH_DELAY_MS = 35_000;
 const EMBEDDING_PRECISION = 6;
 
 const OUTPUT_PATH = resolve(process.cwd(), "data", "pokedex-corpus.json");
-
-export interface CorpusEntry {
-  id: number;
-  name: string;
-  text: string;
-  embedding: number[];
-}
 
 /**
  * Carga .env.local a process.env. Los scripts sueltos no pasan por Next.js,
@@ -173,50 +162,32 @@ async function fetchPokemonText(name: string) {
   };
 }
 
-interface BatchEmbedResponse {
-  embeddings: { values: number[] }[];
-}
-
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-/** Pide a Gemini los embeddings de un lote de textos, en el mismo orden. */
+/**
+ * Envuelve `embedTexts` con la politica de reintentos propia de este script:
+ * un 429 aqui solo significa que se ha agotado la cuota por minuto del tier
+ * gratuito, asi que se espera y se reintenta en vez de abortar.
+ */
 async function embedBatch(texts: string[], apiKey: string, attempt = 1): Promise<number[][]> {
-  const endpoint =
-    `https://generativelanguage.googleapis.com/v1beta/models/${EMBEDDING_MODEL}:batchEmbedContents` +
-    `?key=${apiKey}`;
+  try {
+    const embeddings = await embedTexts(texts, "RETRIEVAL_DOCUMENT", apiKey);
 
-  const response = await fetch(endpoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      requests: texts.map((text) => ({
-        model: `models/${EMBEDDING_MODEL}`,
-        content: { parts: [{ text }] },
-        // Optimiza el vector para su uso como documento recuperable.
-        taskType: "RETRIEVAL_DOCUMENT",
-        outputDimensionality: EMBEDDING_DIMENSIONS,
-      })),
-    }),
-  });
+    return embeddings.map((vector) =>
+      vector.map((value) => Number(value.toFixed(EMBEDDING_PRECISION)))
+    );
+  } catch (error) {
+    if (error instanceof GeminiError && error.status === 429 && attempt <= 5) {
+      const waitMs = 60_000 * attempt;
+      console.log(`  Cuota por minuto alcanzada, esperando ${waitMs / 1000}s antes de reintentar...`);
+      await sleep(waitMs);
+      return embedBatch(texts, apiKey, attempt + 1);
+    }
 
-  // 429 = cuota por minuto agotada. Se espera y se reintenta, no es un fallo real.
-  if (response.status === 429 && attempt <= 5) {
-    const waitMs = 60_000 * attempt;
-    console.log(`  Cuota por minuto alcanzada, esperando ${waitMs / 1000}s antes de reintentar...`);
-    await sleep(waitMs);
-    return embedBatch(texts, apiKey, attempt + 1);
+    throw error;
   }
-
-  if (!response.ok) {
-    throw new Error(`Gemini respondio ${response.status}: ${await response.text()}`);
-  }
-
-  const data = (await response.json()) as BatchEmbedResponse;
-  return data.embeddings.map((item) =>
-    item.values.map((value) => Number(value.toFixed(EMBEDDING_PRECISION)))
-  );
 }
 
 async function main() {
