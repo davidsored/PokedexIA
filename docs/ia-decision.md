@@ -44,7 +44,9 @@ El archivo de embeddings se carga en memoria una vez por invocación de la funci
 
 ## 3. Proveedor y modelo de IA
 
-**Decisión: Google Gemini API — `gemini-embedding-001` para el corpus, y un modelo de la familia `gemini-*-flash` para el chat.**
+**Decisión: Google Gemini API — `gemini-embedding-001` para el corpus, y `gemini-3.5-flash-lite` para el chat.**
+
+**Corrección del modelo de chat tras la implementación:** `gemini-2.5-flash-lite` devuelve 404 ("no longer available to new users"). Se usa `gemini-3.5-flash-lite`, fijado a una versión concreta en lugar del alias `gemini-flash-lite-latest`, para que el comportamiento del chat no cambie sin aviso bajo los pies del proyecto.
 
 **Corrección tras la implementación del corpus:** la primera elección fue `text-embedding-004`, pero ese modelo devuelve 404 en la cuenta de este proyecto (ya no figura en `ListModels`). Los modelos de embeddings disponibles son `gemini-embedding-001` (estable, el elegido), `gemini-embedding-2` y `gemini-embedding-2-preview`. Se usa `outputDimensionality: 768` en lugar de las 3072 por defecto: suficiente para discriminar entre 251 fichas y mantiene el JSON en 1,9 MB en vez de ~8 MB.
 

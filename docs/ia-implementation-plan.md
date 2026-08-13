@@ -25,15 +25,30 @@ Cada paso es verificable antes de avanzar al siguiente. Ningún paso implica des
 - **Qué se construyó:** `lib/semanticSearch.ts` con `cosineSimilarity(a, b)` y `findRelevantPokemon(queryEmbedding, k, entries?)`, que recorre el corpus del paso 2 y devuelve el top-k ordenado por similitud. El parámetro `entries` permite inyectar un corpus de prueba sin tocar el real.
 - **Validación realizada:** 11 tests en verde con `npm test` (runner nativo de Node vía `tsx --test`, sin dependencias de testing añadidas): casos de vectores idénticos, ortogonales, opuestos, nulos, de distinta dimensión, orden del ranking, límite `k`, y una comprobación sobre el corpus real (251 entradas; buscar con el vector de Charizard lo devuelve a él en primera posición). `tsc --noEmit` y `eslint` sin errores. Ningún test llama a Gemini.
 
-### Paso 4 — API route de chat
+### Paso 4 — API route de chat ✅ COMPLETADO
 
-- **Qué se construye:** `pages/api/chat.ts` — recibe `{ question: string }`, valida longitud/no-vacío, aplica rate limiting por IP en memoria, genera el embedding de la pregunta, llama a `findRelevantPokemon`, construye el prompt con el contexto acotado, llama al modelo de chat, devuelve `{ answer: string }` o un error controlado.
-- **Validación:** probar el endpoint con `curl`/Postman con 3 casos: pregunta válida (respuesta coherente citando datos reales), pregunta vacía (400), y más de N peticiones seguidas desde la misma IP (429). Confirmar en la respuesta de red que la clave de API nunca aparece en el payload devuelto al cliente.
+- **Qué se construyó:**
+  - `lib/gemini.ts` — cliente mínimo de la API de Gemini vía `fetch` (sin SDK, cero dependencias nuevas): constantes de modelo, `embedTexts`, `embedQuery`, `generateAnswer`, `parseGeneratedText` y `GeminiError` con código HTTP.
+  - `lib/rateLimit.ts` — ventana deslizante en memoria por IP (8 peticiones/minuto), con `now` inyectable para poder testear el paso del tiempo, y `getClientIp` leyendo `x-forwarded-for`.
+  - `lib/chatPrompt.ts` — `normalizeQuestion` (validación previa a gastar cuota) y `buildPrompt`, que inyecta las fichas recuperadas como única fuente de verdad.
+  - `pages/api/chat.ts` — orquesta todo y devuelve `{ answer, sources }` o un error controlado.
+  - Refactor del script del paso 2 para reutilizar `lib/gemini.ts` y no duplicar modelo ni dimensiones.
+- **Validación realizada** (`curl` contra `npm run dev`):
+  - Pregunta válida ("¿qué Pokémon de tipo fuego tiene mejor ataque especial?") → 200 con respuesta correcta y verificable: Typhlosion y Charizard empatados a 109.
+  - Comparación ("compárame a Charizard y Gyarados") → 200 con cifras exactas de ambas fichas.
+  - Pregunta vacía → 400. Sin campo `question` → 400. Más de 300 caracteres → 400. Método GET → 405.
+  - Rate limiting → 429 al superar 8 peticiones por minuto desde la misma IP, con cabecera `Retry-After`.
+  - Fallo del proveedor (modelo inexistente) → 503 con mensaje genérico al cliente; el detalle real solo aparece en los logs del servidor.
+  - `GEMINI_API_KEY` no aparece en ningún artefacto de `.next/static`; `data/pokedex-corpus.json` no es accesible por HTTP (404).
+- **Corrección de modelo:** `gemini-2.5-flash-lite` devuelve 404 ("no longer available to new users"). Se usa `gemini-3.5-flash-lite`, fijado a versión concreta en vez de `-latest` para que el comportamiento no cambie sin aviso.
 
-### Paso 5 — Tests de la lógica de servidor
+### Paso 5 — Tests de la lógica de servidor ✅ COMPLETADO
 
-- **Qué se construye:** tests para construcción de contexto, construcción de prompt, parsing de respuesta del proveedor (mockeado) y rate limiting, según el punto 8 de `ia-decision.md`.
-- **Validación:** suite de tests en verde (`npm test` o el runner que se añada); confirmar que ningún test hace una llamada real al proveedor de IA (todas mockeadas).
+- **Qué se construyó:**
+  - `lib/chatPrompt.test.ts` — validación de la pregunta (tipo, vacía, límite de longitud y su borde exacto) y construcción del prompt (incluye todas las fichas recuperadas y la pregunta, no filtra fichas ajenas, conserva las instrucciones anti-alucinación).
+  - `lib/gemini.test.ts` — parsing de la respuesta (válida, multiparte, vacía), `taskType`/`outputDimensionality` correctos en la petición de embedding, propagación del código HTTP en `GeminiError` (429 y 503), y que la clave viaja en la URL y nunca en el cuerpo. `fetch` mockeado: ninguna llamada real.
+  - `lib/rateLimit.test.ts` — límite por ventana, cuenta de peticiones restantes, `retryAfterSeconds`, expiración de la ventana deslizante, aislamiento entre IPs y las cuatro variantes de `getClientIp`.
+- **Validación realizada:** 39 tests en verde con `npm test`, `tsc --noEmit` y `eslint` sin errores. Ningún test llama a Gemini ni a PokeAPI.
 
 ### Paso 6 — Componente de chat en UI
 
