@@ -113,6 +113,19 @@ test("la clave de API viaja en la URL de la peticion y no en el cuerpo", async (
   assert.ok(!JSON.stringify(calls[0].body).includes("clave-secreta"));
 });
 
+test("un proveedor que no responde se convierte en un error 504 tratable", async () => {
+  globalThis.fetch = (async () => {
+    const timeout = new Error("The operation was aborted due to timeout");
+    timeout.name = "TimeoutError";
+    throw timeout;
+  }) as unknown as typeof fetch;
+
+  await assert.rejects(
+    () => generateAnswer("hola", "clave-de-prueba"),
+    (error: unknown) => error instanceof GeminiError && error.status === 504
+  );
+});
+
 test("getGeminiApiKey falla con un mensaje claro si falta la variable", () => {
   const original = process.env.GEMINI_API_KEY;
   delete process.env.GEMINI_API_KEY;

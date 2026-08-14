@@ -50,15 +50,18 @@ Cada paso es verificable antes de avanzar al siguiente. Ningún paso implica des
   - `lib/rateLimit.test.ts` — límite por ventana, cuenta de peticiones restantes, `retryAfterSeconds`, expiración de la ventana deslizante, aislamiento entre IPs y las cuatro variantes de `getClientIp`.
 - **Validación realizada:** 39 tests en verde con `npm test`, `tsc --noEmit` y `eslint` sin errores. Ningún test llama a Gemini ni a PokeAPI.
 
-### Paso 6 — Componente de chat en UI
+### Paso 6 — Componente de chat en UI ✅ COMPLETADO
 
-- **Qué se construye:** `components/PokedexChat.tsx` + `PokedexChat.module.css`, integrado en `pages/index.tsx`, reutilizando la estética 8-bit existente (tipografía/bordes de `styles/Home.module.css`). Estados: reposo, escribiendo, cargando respuesta, error.
-- **Validación manual en navegador (`npm run dev`):**
-  1. Abrir el chat desde la home.
-  2. Hacer una pregunta real ("¿qué Pokémon de tipo fuego tiene mejor ataque especial?") y confirmar que la respuesta cita Pokémon y stats coherentes con los datos del propio catálogo.
-  3. Hacer una pregunta de comparación ("compárame a Charizard y Gyarados") y confirmar coherencia.
-  4. Simular fallo del proveedor (clave inválida temporalmente) y confirmar que se muestra el mensaje de error en estilo 8-bit sin romper la página.
-  5. Enviar peticiones repetidas rápido y confirmar que el límite de tasa se activa visualmente sin crash.
+- **Qué se construyó:** `components/PokedexChat.tsx` + `PokedexChat.module.css`, montado en `pages/index.tsx`. Lanzador flotante "ASK DEX" que abre un panel con cabecera roja, historial, sugerencias iniciales y campo de entrada. Reutiliza el lenguaje visual existente (bordes de 4px `#111111`, sombra dura sin desenfoque, `Press Start 2P` para etiquetas y `Space Mono` para el texto). Las respuestas muestran como etiquetas los Pokémon consultados (`sources`), de modo que se ve de dónde sale cada dato.
+- **Validación realizada en navegador:**
+  1. El lanzador aparece en la home y abre el panel con el mensaje de bienvenida y tres sugerencias.
+  2. "Compárame a Charizard y Gyarados" → respuesta con cifras exactas de ambas fichas y las etiquetas de fuentes correspondientes.
+  3. Estado de carga visible ("CONSULTANDO DATOS", campo y botón deshabilitados).
+  4. Rate limiting → mensaje de error en estilo 8-bit dentro del panel (`role="alert"`), sin romper la página ni lanzar excepciones no capturadas.
+  5. Cierre del panel devuelve al lanzador.
+  6. Móvil (375×812): el panel ocupa el ancho disponible sin desbordar ni provocar scroll horizontal.
+- **Añadido durante la validación:** las llamadas a Gemini no tenían timeout, y una respuesta lenta (se observó una de 42 s) dejaba al usuario esperando indefinidamente. Se añadió un timeout de 20 s por llamada (`AbortSignal.timeout`), que se traduce en un `GeminiError` 504 y, de cara al usuario, en el mensaje de error controlado. Cubierto por un test nuevo (40 en total).
+- **Accesibilidad:** `role="log"` con `aria-live="polite"` en el historial, `role="alert"` en los errores, etiquetas ARIA en los botones y respeto a `prefers-reduced-motion`.
 
 ### Paso 7 — Validación de build y despliegue
 

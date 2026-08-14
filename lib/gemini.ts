@@ -35,6 +35,30 @@ export const CHAT_MODEL = "gemini-3.5-flash-lite";
  */
 export type EmbeddingTaskType = "RETRIEVAL_DOCUMENT" | "RETRIEVAL_QUERY";
 
+/**
+ * Tiempo maximo de espera por llamada. Sin el, una respuesta lenta del
+ * proveedor deja al usuario esperando indefinidamente delante del chat.
+ */
+const REQUEST_TIMEOUT_MS = 20_000;
+
+/** `fetch` con timeout: un proveedor colgado se convierte en un error tratable. */
+async function fetchWithTimeout(url: string, body: unknown): Promise<Response> {
+  try {
+    return await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    });
+  } catch (error) {
+    if (error instanceof Error && error.name === "TimeoutError") {
+      throw new GeminiError(504, `Gemini no respondio en ${REQUEST_TIMEOUT_MS / 1000} segundos.`);
+    }
+
+    throw error;
+  }
+}
+
 /** Error de la API de Gemini, con el codigo HTTP para poder distinguir un 429. */
 export class GeminiError extends Error {
   readonly status: number;
@@ -71,18 +95,17 @@ export async function embedTexts(
   taskType: EmbeddingTaskType,
   apiKey: string
 ): Promise<number[][]> {
-  const response = await fetch(`${API_BASE}/${EMBEDDING_MODEL}:batchEmbedContents?key=${apiKey}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
+  const response = await fetchWithTimeout(
+    `${API_BASE}/${EMBEDDING_MODEL}:batchEmbedContents?key=${apiKey}`,
+    {
       requests: texts.map((text) => ({
         model: `models/${EMBEDDING_MODEL}`,
         content: { parts: [{ text }] },
         taskType,
         outputDimensionality: EMBEDDING_DIMENSIONS,
       })),
-    }),
-  });
+    }
+  );
 
   if (!response.ok) {
     throw new GeminiError(response.status, await response.text());
@@ -123,17 +146,16 @@ export function parseGeneratedText(data: GenerateContentResponse): string {
 
 /** Genera la respuesta conversacional a partir del prompt ya construido. */
 export async function generateAnswer(prompt: string, apiKey: string): Promise<string> {
-  const response = await fetch(`${API_BASE}/${CHAT_MODEL}:generateContent?key=${apiKey}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
+  const response = await fetchWithTimeout(
+    `${API_BASE}/${CHAT_MODEL}:generateContent?key=${apiKey}`,
+    {
       contents: [{ role: "user", parts: [{ text: prompt }] }],
       generationConfig: {
         temperature: 0.3,
         maxOutputTokens: 500,
       },
-    }),
-  });
+    }
+  );
 
   if (!response.ok) {
     throw new GeminiError(response.status, await response.text());

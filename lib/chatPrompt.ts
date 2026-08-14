@@ -1,3 +1,7 @@
+// IMPORTANTE: esta importacion debe seguir siendo `import type`. El componente
+// de chat (cliente) importa MAX_QUESTION_LENGTH de este modulo, y `semanticSearch`
+// arrastra el corpus de ~2 MB: convertirla en importacion de valor lo colaria
+// entero en el bundle de cliente sin que nada falle de forma visible.
 import type { CorpusEntry } from "./semanticSearch";
 
 /** Longitud maxima aceptada para la pregunta del usuario. */
