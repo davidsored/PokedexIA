@@ -68,10 +68,14 @@ Cada paso es verificable antes de avanzar al siguiente. Ningún paso implica des
 - **Qué se construye:** nada nuevo — verificación de que todo lo anterior sobrevive un build de producción real.
 - **Validación:** `npm run build` local sin errores de TypeScript/lint; deploy a un entorno preview de Vercel; repetir manualmente los 5 casos del paso 6 contra el preview desplegado (no solo `localhost`).
 
-### Paso 8 — Versionado y changelog (este repo)
+### Paso 8 — Versionado y changelog (este repo) ✅ COMPLETADO
 
-- **Qué se construye:** bump de versión en `package.json` según SemVer (nueva funcionalidad → minor, p. ej. `0.3.3` → `0.4.0`), entrada nueva en `CHANGELOG.md` bajo `### Added` describiendo el chat/RAG, y un archivo de documentación en `docs/` para esta feature (siguiendo el patrón ya usado por el resto de `docs/feature-*.md`).
-- **Validación:** revisión manual de que el número de versión y el changelog siguen exactamente las convenciones ya usadas en commits previos del repo.
+- **Qué se construyó:**
+  - `package.json`: versión `0.3.3` → `0.4.0` (minor, por nueva funcionalidad, según SemVer).
+  - `CHANGELOG.md`: entrada `[0.4.0] - 2026-08-14` con secciones `### Added` y `### Changed`, siguiendo el formato Keep a Changelog ya usado en el resto del archivo.
+  - `docs/feature-ia-chat-rag.md`: documentación de la feature con el mismo patrón que el resto de `docs/feature-*.md` (Resumen / Cambios realizados / Comportamiento), más una sección de configuración.
+  - `README.md`: añadidos el chat a la vista general y a features, Gemini al stack, las rutas nuevas a la estructura, una sección de variables de entorno, los scripts `test` y `build:corpus`, y las decisiones técnicas del RAG.
+- **Validación realizada:** 40 tests en verde, `tsc --noEmit` y `eslint` sin errores, y revisión manual de que la entrada del changelog respeta las convenciones de las versiones anteriores.
 
 ### Paso 9 — Actualizar el copy del portfolio (repo distinto)
 

@@ -5,6 +5,21 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [SemVer](https://semver.org/lang/es/).
 
+## [0.4.0] - 2026-08-14
+
+### Added
+- Chat conversacional sobre los 251 Pokemon de Kanto y Johto, que responde en lenguaje natural a partir de los datos reales de PokeAPI mediante RAG. Es la funcion de IA que da nombre al proyecto.
+- Nuevo `scripts/build-pokedex-corpus.ts` (`npm run build:corpus`), que genera el corpus de embeddings con `gemini-embedding-001` y lo versiona en `data/pokedex-corpus.json`.
+- Nueva API route `pages/api/chat.ts`, con validacion de la pregunta, limitacion de tasa por IP y manejo de errores del proveedor.
+- Nuevos modulos de servidor `lib/gemini.ts`, `lib/semanticSearch.ts`, `lib/chatPrompt.ts` y `lib/rateLimit.ts`.
+- Nuevo componente `components/PokedexChat.tsx` con su hoja de estilos, integrado en la home y con el lanzador basado en el sprite `public/pokedex-chat-icon.png`.
+- Primeras pruebas automatizadas del proyecto: 40 tests con `npm test`, usando el runner nativo de Node a traves de `tsx`.
+- Documentacion en `docs/ia-decision.md`, `docs/ia-implementation-plan.md` y `docs/feature-ia-chat-rag.md`.
+- Nuevo `.env.example` documentando la variable `GEMINI_API_KEY`.
+
+### Changed
+- `.gitignore` deja de ignorar `.env.example`, para poder versionar la plantilla de variables sin exponer valores.
+
 ## [0.3.3] - 2026-06-04
 
 ### Fixed
