@@ -1,6 +1,6 @@
 {
   "name": "pokedexia",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "private": true,
   "description": "Pokedex interactiva en Next.js con PokeAPI y estetica 8-bit.",
   "license": "MIT",
@@ -8,13 +8,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "build:corpus": "tsx scripts/build-pokedex-corpus.ts",
+    "test": "tsx --test \"lib/**/*.test.ts\""
   },
   "dependencies": {
+    "axios": "^1.13.2",
     "next": "16.2.6",
     "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "axios": "^1.13.2"
+    "react-dom": "19.2.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -24,6 +26,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
+    "tsx": "^4.23.12",
     "typescript": "^5"
   }
 }

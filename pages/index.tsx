@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import type { GetStaticProps } from "next";
 import { Press_Start_2P, Space_Mono } from "next/font/google";
+import PokedexChat from "@/components/PokedexChat";
 import PokemonCard from "@/components/PokemonCard";
 import api from "@/lib/axios";
 import type { Pokemon, PokemonListResponse } from "@/types/pokemon";
@@ -231,6 +232,8 @@ export default function Home({ pokemons }: HomeProps) {
           <span className={styles.footerLink}>RESET</span>
         </div>
       </footer>
+
+      <PokedexChat />
     </div>
   );
 }

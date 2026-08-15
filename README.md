@@ -13,6 +13,7 @@ Actualmente permite:
 - Filtrar por tipo
 - Filtrar por region
 - Consultar una vista de detalle con stats, abilities y navegacion entre Pokemon
+- Preguntar en lenguaje natural a un chat que responde con los datos reales del catalogo
 
 ## Demo Visual
 
@@ -37,6 +38,10 @@ Actualmente permite:
   - stats base con barras de color
   - abilities con descripcion real desde `PokeAPI`
   - navegacion entre Pokemon anterior y siguiente
+- Chat conversacional (RAG) sobre los `251` Pokemon:
+  - responde en lenguaje natural a partir de los datos reales de `PokeAPI`, no de conocimiento del modelo
+  - muestra que Pokemon ha consultado para elaborar cada respuesta
+  - limitacion de tasa por IP y manejo de errores del proveedor
 - Generacion estatica con revalidacion para reducir llamadas repetidas
 
 ## Stack Tecnico
@@ -48,6 +53,7 @@ Actualmente permite:
 - `PokeAPI`
 - `CSS Modules`
 - `next/font/google`
+- `Gemini API` (`gemini-embedding-001` y `gemini-3.5-flash-lite`) para el chat
 
 ## Estructura Del Proyecto
 
@@ -55,10 +61,20 @@ Actualmente permite:
 pages/
   index.tsx                 Home con filtros y listado principal
   pokemon/[name].tsx        Vista de detalle de cada Pokemon
+  api/chat.ts               Endpoint del chat conversacional
 components/
   PokemonCard.tsx           Tarjeta reutilizable del listado
+  PokedexChat.tsx           Asistente conversacional de la home
 lib/
   axios.ts                  Cliente HTTP base para PokeAPI
+  gemini.ts                 Cliente de la API de Gemini (solo servidor)
+  semanticSearch.ts         Busqueda por similitud sobre el corpus
+  chatPrompt.ts             Validacion de la pregunta y armado del prompt
+  rateLimit.ts              Limitacion de tasa por IP
+scripts/
+  build-pokedex-corpus.ts   Genera el corpus de embeddings
+data/
+  pokedex-corpus.json       Corpus vectorizado de los 251 Pokemon
 types/
   pokemon.ts                Tipos principales de datos
 docs/
@@ -70,6 +86,18 @@ docs/
 ```bash
 npm install
 ```
+
+## Variables De Entorno
+
+El chat conversacional requiere una clave de la API de Gemini. Copia `.env.example` a `.env.local` y rellena el valor:
+
+```bash
+GEMINI_API_KEY=tu_clave
+```
+
+La clave se obtiene en [Google AI Studio](https://aistudio.google.com/apikey) y el nivel gratuito basta para el uso de este proyecto. Nunca debe versionarse ni exponerse con el prefijo `NEXT_PUBLIC_`: solo se usa en codigo de servidor.
+
+El resto de la aplicacion funciona sin esta variable; unicamente el chat quedaria inoperativo.
 
 ## Uso Local
 
@@ -98,7 +126,11 @@ npm run dev
 npm run build
 npm run start
 npm run lint
+npm run test           # pruebas de la logica de servidor
+npm run build:corpus   # regenera el corpus de embeddings del chat
 ```
+
+`build:corpus` solo hace falta si cambian los datos de origen o el texto de las fichas. Tarda unos 3 minutos, porque el nivel gratuito de Gemini limita a 100 embeddings por minuto.
 
 ## Fuente De Datos
 
@@ -121,6 +153,9 @@ Recursos usados en la aplicacion:
 - La region actual se calcula por rango de ID para el alcance actual:
   - `1-151`: `Kanto`
   - `152-251`: `Johto`
+- El chat usa RAG con embeddings precalculados en `data/pokedex-corpus.json`, no una base de datos vectorial: con `251` fichas fijas, la similitud coseno en memoria cuesta milisegundos y evita infraestructura innecesaria.
+- La clave de Gemini solo se usa en `pages/api/chat.ts` y en el script del corpus, nunca en codigo de cliente.
+- Justificacion completa de estas decisiones en [`docs/ia-decision.md`](docs/ia-decision.md).
 
 ## Roadmap
 
