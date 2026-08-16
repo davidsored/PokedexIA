@@ -5,6 +5,22 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto adhiere a [SemVer](https://semver.org/lang/es/).
 
+## [0.5.0] - 2026-08-16
+
+### Added
+- Consultas estructuradas en el chat: las preguntas de superlativo ("el Pokemon mas pesado de Johto", "el de tipo fuego con mejor ataque especial") se resuelven ordenando las 251 fichas por el campo correspondiente, en vez de depender de que la respuesta correcta caiga dentro del top-k semantico.
+- Nuevo `lib/structuredQuery.ts`, con deteccion de superlativos por palabras clave en espanol, filtros por tipo y region, y ordenacion determinista sobre el corpus completo.
+- El corpus incluye ahora los datos numericos estructurados de cada ficha (`types`, `region`, `height`, `weight`, `stats`, `statTotal`).
+- Nuevo `lib/testFixtures.ts` con una factoria de fichas para las pruebas.
+- 16 pruebas nuevas para el detector y el ordenado (56 en total).
+
+### Changed
+- `buildPrompt` acepta la descripcion de la consulta cuando el contexto es un ranking ya calculado, para que el modelo pueda afirmar cual es el primero en lugar de responder que no dispone del dato.
+- `scripts/build-pokedex-corpus.ts` reutiliza los embeddings del corpus anterior cuando el texto de la ficha no ha cambiado, de modo que un cambio de metadatos no consume cuota del nivel gratuito.
+
+### Fixed
+- Las preguntas de superlativo global devolvian "no tengo esa informacion" aunque el dato estuviera en el catalogo, porque la busqueda semantica recupera las fichas mas parecidas a la pregunta y no necesariamente la que la responde.
+
 ## [0.4.0] - 2026-08-14
 
 ### Added

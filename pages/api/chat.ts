@@ -2,7 +2,12 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { buildPrompt, CONTEXT_SIZE, normalizeQuestion } from "@/lib/chatPrompt";
 import { embedQuery, generateAnswer, GeminiError, getGeminiApiKey } from "@/lib/gemini";
 import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
-import { findRelevantPokemon } from "@/lib/semanticSearch";
+import { findRelevantPokemon, pokedexCorpus } from "@/lib/semanticSearch";
+import {
+  describeStructuredQuery,
+  parseStructuredQuery,
+  runStructuredQuery,
+} from "@/lib/structuredQuery";
 
 export interface ChatSuccessResponse {
   answer: string;
@@ -45,9 +50,23 @@ export default async function handler(
   try {
     const apiKey = getGeminiApiKey();
 
-    const queryEmbedding = await embedQuery(question, apiKey);
-    const relevant = findRelevantPokemon(queryEmbedding, CONTEXT_SIZE);
-    const answer = await generateAnswer(buildPrompt(question, relevant), apiKey);
+    // Las preguntas de superlativo se resuelven ordenando el corpus completo:
+    // la busqueda semantica solo recupera fichas parecidas a la pregunta, que no
+    // tienen por que incluir la que la responde. De paso ahorra la llamada de
+    // embedding, porque no hace falta vectorizar nada.
+    const structured = parseStructuredQuery(question);
+
+    const relevant = structured
+      ? runStructuredQuery(structured, pokedexCorpus)
+      : findRelevantPokemon(await embedQuery(question, apiKey), CONTEXT_SIZE);
+
+    const prompt = buildPrompt(
+      question,
+      relevant,
+      structured ? describeStructuredQuery(structured) : undefined
+    );
+
+    const answer = await generateAnswer(prompt, apiKey);
 
     return res.status(200).json({
       answer,

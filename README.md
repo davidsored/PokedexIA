@@ -40,6 +40,7 @@ Actualmente permite:
   - navegacion entre Pokemon anterior y siguiente
 - Chat conversacional (RAG) sobre los `251` Pokemon:
   - responde en lenguaje natural a partir de los datos reales de `PokeAPI`, no de conocimiento del modelo
+  - resuelve preguntas de superlativo (`el mas pesado de Johto`) ordenando el catalogo completo, no solo las fichas mas parecidas a la pregunta
   - muestra que Pokemon ha consultado para elaborar cada respuesta
   - limitacion de tasa por IP y manejo de errores del proveedor
 - Generacion estatica con revalidacion para reducir llamadas repetidas
@@ -70,6 +71,7 @@ lib/
   gemini.ts                 Cliente de la API de Gemini (solo servidor)
   semanticSearch.ts         Busqueda por similitud sobre el corpus
   chatPrompt.ts             Validacion de la pregunta y armado del prompt
+  structuredQuery.ts        Consultas de superlativo sobre el catalogo completo
   rateLimit.ts              Limitacion de tasa por IP
 scripts/
   build-pokedex-corpus.ts   Genera el corpus de embeddings
