@@ -39,10 +39,29 @@ export function normalizeQuestion(value: unknown): string {
  * El objetivo es que el modelo responda con los datos reales del catalogo y
  * admita no saber, en vez de inventar stats o Pokemon que no existen.
  */
-export function buildPrompt(question: string, entries: CorpusEntry[]): string {
+export function buildPrompt(
+  question: string,
+  entries: CorpusEntry[],
+  /**
+   * Presente solo cuando las fichas vienen de una consulta estructurada: en ese
+   * caso son un ranking ya calculado sobre los 251 Pokemon, y el modelo puede
+   * afirmar cual es el primero sin arriesgarse a inventar.
+   */
+  ranking?: string
+): string {
   const context = entries
     .map((entry) => `[#${entry.id} ${entry.name}] ${entry.text}`)
     .join("\n\n");
+
+  const rankingRules = ranking
+    ? [
+        `- Las FICHAS son un ranking ya calculado sobre los 251 Pokemon del catalogo: ${ranking}.`,
+        "- El primero de la lista es la respuesta a la pregunta. Puedes afirmarlo con seguridad.",
+        "- Menciona tambien algun otro de la lista si aporta contexto util.",
+      ]
+    : [
+        "- Si las fichas no contienen la informacion necesaria, dilo claramente en vez de suponer.",
+      ];
 
   return [
     "Eres la Pokedex de un catalogo que cubre unicamente los 251 Pokemon de Kanto y Johto.",
@@ -50,7 +69,7 @@ export function buildPrompt(question: string, entries: CorpusEntry[]): string {
     "",
     "Reglas:",
     "- Usa exclusivamente los datos de las FICHAS de abajo. No inventes stats, tipos ni habilidades.",
-    "- Si las fichas no contienen la informacion necesaria, dilo claramente en vez de suponer.",
+    ...rankingRules,
     "- Cuando cites cifras (estadisticas, altura, peso), copialas literalmente de las fichas.",
     "- No menciones que estas leyendo fichas ni hables de tu propio funcionamiento.",
     "",

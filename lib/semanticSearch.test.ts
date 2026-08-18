@@ -6,16 +6,17 @@ import {
   pokedexCorpus,
   type CorpusEntry,
 } from "./semanticSearch";
+import { makeCorpusEntry } from "./testFixtures";
 
 /**
  * Corpus de prueba con vectores fijos y conocidos: permite comprobar el orden
  * del ranking sin llamar a Gemini ni depender del corpus real.
  */
 const testEntries: CorpusEntry[] = [
-  { id: 1, name: "alfa", text: "alfa", embedding: [1, 0, 0] },
-  { id: 2, name: "beta", text: "beta", embedding: [0, 1, 0] },
-  { id: 3, name: "gamma", text: "gamma", embedding: [0.8, 0.6, 0] },
-  { id: 4, name: "delta", text: "delta", embedding: [-1, 0, 0] },
+  makeCorpusEntry(1, "alfa", { text: "alfa", embedding: [1, 0, 0] }),
+  makeCorpusEntry(2, "beta", { text: "beta", embedding: [0, 1, 0] }),
+  makeCorpusEntry(3, "gamma", { text: "gamma", embedding: [0.8, 0.6, 0] }),
+  makeCorpusEntry(4, "delta", { text: "delta", embedding: [-1, 0, 0] }),
 ];
 
 test("cosineSimilarity vale 1 para vectores identicos", () => {

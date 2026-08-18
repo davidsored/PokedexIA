@@ -17,6 +17,8 @@ Esta es la función de IA que da nombre al proyecto y que hasta ahora estaba pen
 
 - Nuevo `lib/gemini.ts`: cliente mínimo de la API de Gemini vía `fetch`, sin SDK ni dependencias nuevas. Incluye timeout de 20 s por llamada y `GeminiError` con el código HTTP para poder distinguir un 429 de un fallo genérico.
 - Nuevo `lib/semanticSearch.ts`: similitud coseno y `findRelevantPokemon`, que recorre el corpus y devuelve el top-k. Con 251 vectores no hace falta ningún índice ni servicio de búsqueda vectorial.
+
+> **Nota (v0.5.0):** las preguntas de superlativo ya no usan esta vía, sino una consulta estructurada sobre el corpus completo. Ver [`feature-consultas-estructuradas.md`](./feature-consultas-estructuradas.md).
 - Nuevo `lib/chatPrompt.ts`: validación de la pregunta y construcción del prompt con las fichas recuperadas como única fuente de verdad.
 - Nuevo `lib/rateLimit.ts`: límite de 8 peticiones por minuto y por IP, en memoria y *best-effort*, sin infraestructura externa.
 - Nueva API route `pages/api/chat.ts`: orquesta todo lo anterior y devuelve `{ answer, sources }`.
@@ -34,7 +36,7 @@ Esta es la función de IA que da nombre al proyecto y que hasta ahora estaba pen
 ## Comportamiento
 
 - El usuario abre el chat desde el lanzador de la home y pregunta en lenguaje natural.
-- El servidor vectoriza la pregunta, recupera las 6 fichas más parecidas del corpus y se las pasa al modelo como único contexto, con instrucciones de no inventar datos y de admitir cuando no dispone de la información.
+- El servidor vectoriza la pregunta, recupera las 6 fichas más parecidas del corpus y se las pasa al modelo como único contexto, con instrucciones de no inventar datos y de admitir cuando no dispone de la información. Desde v0.5.0, las preguntas de superlativo toman en su lugar la vía de consulta estructurada.
 - Si el proveedor falla, tarda demasiado o se supera el límite de peticiones, el chat muestra un mensaje de error en el mismo estilo 8-bit sin romper la página. El detalle técnico solo llega a los logs del servidor.
 
 ## Configuración

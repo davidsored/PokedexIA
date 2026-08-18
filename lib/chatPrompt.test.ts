@@ -2,10 +2,11 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { buildPrompt, MAX_QUESTION_LENGTH, normalizeQuestion } from "./chatPrompt";
 import type { CorpusEntry } from "./semanticSearch";
+import { makeCorpusEntry } from "./testFixtures";
 
 const entries: CorpusEntry[] = [
-  { id: 6, name: "charizard", text: "charizard es de tipo fire/flying.", embedding: [1, 0] },
-  { id: 130, name: "gyarados", text: "gyarados es de tipo water/flying.", embedding: [0, 1] },
+  makeCorpusEntry(6, "charizard", { text: "charizard es de tipo fire/flying." }),
+  makeCorpusEntry(130, "gyarados", { text: "gyarados es de tipo water/flying." }),
 ];
 
 test("normalizeQuestion recorta los espacios sobrantes", () => {

@@ -1,13 +1,37 @@
 import corpus from "@/data/pokedex-corpus.json";
 
+/** Estadisticas base, con las claves que usa PokeAPI. */
+export interface CorpusStats {
+  hp: number;
+  attack: number;
+  defense: number;
+  "special-attack": number;
+  "special-defense": number;
+  speed: number;
+}
+
 /**
  * Una ficha de Pokemon vectorizada, tal y como la genera
  * scripts/build-pokedex-corpus.ts.
+ *
+ * Ademas del texto y su embedding, guarda los datos numericos ya estructurados:
+ * son los que permiten resolver preguntas de superlativo ("el mas pesado de
+ * Johto") calculandolas sobre las 251 fichas, en vez de depender de que la
+ * respuesta correcta caiga dentro del top-k semantico.
  */
 export interface CorpusEntry {
   id: number;
   name: string;
   text: string;
+  types: string[];
+  region: "kanto" | "johto";
+  /** Altura en metros. */
+  height: number;
+  /** Peso en kilogramos. */
+  weight: number;
+  stats: CorpusStats;
+  /** Suma de las seis estadisticas base. */
+  statTotal: number;
   embedding: number[];
 }
 

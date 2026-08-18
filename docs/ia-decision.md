@@ -74,10 +74,16 @@ El proyecto ya está en el router `pages/`, y una API route de Next.js *es* una 
 
 La API route:
 - Recibe la pregunta del usuario.
-- Calcula el embedding de la pregunta (misma llamada al proveedor que en build time).
-- Selecciona los N Pokémon más similares (top-k, p. ej. 5) del JSON estático por similitud coseno.
+- Decide la vía de recuperación (ver más abajo).
 - Construye un prompt con ese contexto acotado + la pregunta del usuario.
 - Llama al modelo de chat y devuelve la respuesta.
+
+**Dos vías de recuperación (añadido en v0.5.0):**
+
+1. **Consulta estructurada**, para preguntas de superlativo: se filtra y ordena el corpus completo por el campo pedido, y se devuelven las 5 primeras fichas. No requiere embedding.
+2. **Búsqueda semántica**, para el resto: embedding de la pregunta y top-k por similitud coseno.
+
+El motivo es que el top-k recupera las fichas más *parecidas* a la pregunta, que no son necesariamente las que la *responden*. Para "el Pokémon más pesado de Johto" el top-k devolvía legendarios y Pokémon grandes, pero no Steelix, que es la respuesta correcta; el modelo, correctamente instruido para no inventar, admitía no tener el dato. Subir `k` reduce la probabilidad de fallo pero no la elimina, y encarece cada consulta. Detalle completo en [`feature-consultas-estructuradas.md`](./feature-consultas-estructuradas.md).
 
 **Ninguna clave de API se referencia desde código de cliente.** Todo el acceso al proveedor de IA ocurre exclusivamente en el handler de la API route, que corre en servidor.
 

@@ -9,7 +9,7 @@
  *
  * Uso: npx tsx scripts/build-pokedex-corpus.ts
  */
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 import api from "../lib/axios";
 import { embedTexts, GeminiError } from "../lib/gemini";
@@ -155,10 +155,28 @@ async function fetchPokemonText(name: string) {
     };
   });
 
+  const statsByName = new Map(pokemon.stats.map((item) => [item.stat.name, item.base_stat]));
+
+  const stats: CorpusEntry["stats"] = {
+    hp: statsByName.get("hp") ?? 0,
+    attack: statsByName.get("attack") ?? 0,
+    defense: statsByName.get("defense") ?? 0,
+    "special-attack": statsByName.get("special-attack") ?? 0,
+    "special-defense": statsByName.get("special-defense") ?? 0,
+    speed: statsByName.get("speed") ?? 0,
+  };
+
   return {
     id: pokemon.id,
     name: pokemon.name,
     text: buildPokemonText(pokemon, getEnglishCategory(species), abilities),
+    types: pokemon.types.map((item) => item.type.name),
+    // El alcance del proyecto son Kanto (1-151) y Johto (152-251).
+    region: pokemon.id <= 151 ? ("kanto" as const) : ("johto" as const),
+    height: Number((pokemon.height / 10).toFixed(1)),
+    weight: Number((pokemon.weight / 10).toFixed(1)),
+    stats,
+    statTotal: pokemon.stats.reduce((sum, item) => sum + item.base_stat, 0),
   };
 }
 
@@ -213,11 +231,40 @@ async function main() {
     return document;
   });
 
-  console.log("Generando embeddings con Gemini...");
-  const entries: CorpusEntry[] = [];
+  // Reutiliza los vectores del corpus anterior cuyo texto no haya cambiado: un
+  // cambio de metadatos no deberia gastar cuota regenerando embeddings identicos.
+  const previous = new Map<number, CorpusEntry>();
 
-  for (let start = 0; start < documents.length; start += EMBED_BATCH_SIZE) {
-    const batch = documents.slice(start, start + EMBED_BATCH_SIZE);
+  if (existsSync(OUTPUT_PATH)) {
+    const stored = JSON.parse(readFileSync(OUTPUT_PATH, "utf8")) as CorpusEntry[];
+    stored.forEach((entry) => previous.set(entry.id, entry));
+  }
+
+  const reused: CorpusEntry[] = [];
+  const pending: typeof documents = [];
+
+  for (const document of documents) {
+    const stored = previous.get(document.id);
+
+    if (stored && stored.text === document.text && stored.embedding?.length > 0) {
+      reused.push({ ...document, embedding: stored.embedding });
+    } else {
+      pending.push(document);
+    }
+  }
+
+  if (reused.length > 0) {
+    console.log(`Reutilizando ${reused.length} embeddings del corpus anterior (texto sin cambios).`);
+  }
+
+  const entries: CorpusEntry[] = [...reused];
+
+  if (pending.length > 0) {
+    console.log(`Generando ${pending.length} embeddings con Gemini...`);
+  }
+
+  for (let start = 0; start < pending.length; start += EMBED_BATCH_SIZE) {
+    const batch = pending.slice(start, start + EMBED_BATCH_SIZE);
     const embeddings = await embedBatch(
       batch.map((document) => document.text),
       apiKey
@@ -227,9 +274,9 @@ async function main() {
       entries.push({ ...document, embedding: embeddings[index] });
     });
 
-    console.log(`  ${entries.length}/${documents.length} embeddings generados`);
+    console.log(`  ${entries.length - reused.length}/${pending.length} embeddings generados`);
 
-    if (start + EMBED_BATCH_SIZE < documents.length) {
+    if (start + EMBED_BATCH_SIZE < pending.length) {
       await sleep(EMBED_BATCH_DELAY_MS);
     }
   }
